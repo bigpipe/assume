@@ -1,0 +1,400 @@
+'use strict';
+
+var toString = Object.prototype.toString
+  , hasOwn = Object.prototype.hasOwnProperty;
+
+/**
+ * Get class information for a given type.
+ *
+ * @param {Mixed} of Type to check.
+ * @returns {String} The name of the type.
+ * @api private
+ */
+function type(of) {
+  return toString.call(of).slice(8, -1).toLowerCase();
+}
+
+/**
+ * Determine the size of a collection.
+ *
+ * @param {Mixed} collection The object we want to know the size of.
+ * @returns {Number} The size of the collection.
+ * @api private
+ */
+function size(collection) {
+  var x, i = 0;
+
+  if ('object' === type(collection)) {
+    for (x in collection) {
+      if (hasOwn.call(collection, x)) i++;
+    }
+
+    return i;
+  }
+
+  return +collection.length || 0;
+}
+
+/**
+ * Iterate over each item in an array.
+ *
+ * @param {Array} arr Array to iterate over.
+ * @param {Function} fn Callback for each item.
+ * @private
+ */
+function each(arr, fn) {
+  for (var i = 0, length = arr.length; i < length; i++) {
+    fn(arr[i], i, arr);
+  }
+}
+
+/**
+ * Assert values.
+ *
+ * Flags:
+ *
+ * - **falsely**: Assert for a false instead of true.
+ * - **deeply**:  Ensure a deep match of the given object.
+ *
+ * @constructor
+ * @param {Mixed} value Value we need to assert.
+ * @param {Object} flags Assertion flags.
+ * @api public
+ */
+function Assert(value, flags) {
+  if (!(this instanceof Assert)) return new Assert(value, flags);
+  flags = flags || {};
+
+  this.falsely = 'falsely' in flags ? flags.falsely : false;
+  this.deeply = 'deeply' in flags ? flags.deeply : false;
+
+  Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does');
+  Assert.alias(value, this);
+}
+
+/**
+ * Assign values to a given thing.
+ *
+ * @param {Mixed} where Where do the new properties need to be assigned on.
+ * @returns {Function}
+ * @api public
+ */
+Assert.assign = function assign(where) {
+  return function assigns(aliases, value) {
+    if ('string' === typeof aliases) {
+      if (~aliases.indexOf(',')) aliases = aliases.split(/[\s|\,]+/);
+      else aliases = [aliases];
+    }
+
+    for (var i = 0, length = aliases.length; i < length; i++) {
+      where[aliases[i]] = value || where;
+    }
+
+    return where;
+  };
+};
+
+/**
+ * Add aliases to the given constructed asserts. This allows us to chain
+ * assertion calls together.
+ *
+ * @param {Mixed} value Value that we need to assert.
+ * @param {Assert} assert The constructed assert instance.
+ * @returns {Assert} The given assert instance.
+ * @api private
+ */
+Assert.alias = function alias(value, assert) {
+  var assign = Assert.assign(assert)
+    , flags, flag, prop;
+
+  for (prop in Assert.aliases) {
+    if (!hasOwn.call(Assert.aliases, prop)) continue;
+
+    if (!assert[prop]) {
+      flags = {};
+
+      for (flag in Assert.aliases) {
+        if (!hasOwn.call(Assert.aliases, flag)) continue;
+        flags[prop] = assert[flag];
+      }
+
+      assign(Assert.aliases, new Assert(value, flags));
+    } else assign(Assert.aliases);
+  }
+
+  return assert;
+};
+
+/**
+ * List of aliases and properties that need to be created for chaining purposes.
+ * Plugins could add extra properties that needed to be chained as well.
+ *
+ * @type {Object}
+ * @public
+ */
+Assert.aliases = {
+  falsely: 'doesnt, not, dont',
+  deeply: 'deep'
+};
+
+/**
+ * API sugar of adding aliased prototypes to the Assert. This makes the code
+ * a bit more workable and human readable.
+ *
+ * @param {String|Array} aliases List of methods.
+ * @param {Function} fn Actual assertion function.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add = Assert.assign(Assert.prototype);
+
+/**
+ * Asserts if the given value is the correct type. We need to use
+ * Object.toString here because there are some implementation bugs the `typeof`
+ * operator:
+ *
+ * - Chrome <= 9: /Regular Expressions/ are evaluated to `function`
+ *
+ * As well as all common flaws like Arrays being seen as Objects etc. This
+ * eliminates all these edge cases.
+ *
+ * @param {String} of Type of class it should equal
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('a, an', function type(of, msg) {
+  return this.equals(type(this.value), of, msg);
+});
+
+/**
+ * Asserts that the value is instanceof the given constructor.
+ *
+ * @param {Function} constructor Constructur the value should inherit from.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg) {
+  return this.equals(this.value instanceof constructor, msg);
+});
+
+/**
+ * Assert that the value includes the given value.
+ *
+ * @param {Mixed} val Value to match.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('include, includes, contain, contains', function contain(val, msg) {
+  var includes = false;
+
+  switch (type(this.value)) {
+    case 'array':
+      for (var i = 0, length = this.value.length; i < length; i++) {
+        if (val === this.value[i]) {
+          includes = true;
+          break;
+        }
+      }
+    break;
+
+    case 'object':
+      if (val in this.value) {
+        includes = true;
+      }
+    break;
+
+    case 'string':
+      if (~this.value.indexOf(val)) {
+        includes = true;
+      }
+    break;
+  }
+
+  return this.equals(includes, true, msg);
+});
+
+/**
+ * Assert that the value is truthy.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('ok, truthy', function ok(msg) {
+  return this.equals(!!this.value, true, msg);
+});
+
+/**
+ * Assert that the value is `true`.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('true', function ok(msg) {
+  return this.equals(this.value, true, msg);
+});
+
+/**
+ * Assert that the value is `true`.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('false', function ok(msg) {
+  return this.equals(this.value, false, msg);
+});
+
+/**
+ * Assert that the value exists.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('exists', function exists(msg) {
+  return this.equals(this.value != null, true, msg);
+});
+
+/**
+ * Asserts that the value's length is 0 or doesn't contain any enumerable keys.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('empty', function empty(msg) {
+  return this.equals(size(this.value), 0, msg);
+});
+
+/**
+ * Assert that the value is greater than the specified value.
+ *
+ * @param {Number} value The greather than value.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
+  var amount = type(this.value) !== 'number'
+    ? size(this.value)
+    : this.value;
+
+  return this.equals(amount > value, true, msg);
+});
+
+/**
+ * Assert that the value is equal or greater than the specified value.
+ *
+ * @param {Number} value The specified value.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('least, gte', function least(value, msg) {
+  var amount = type(this.value) !== 'number'
+    ? size(this.value)
+    : this.value;
+
+  return this.equals(amount >= value, true, msg);
+});
+
+/**
+ * Assert that the value is below the specified value.
+ *
+ * @param {Number} value The specified value.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('below, lt, less, lessThan', function below(value, msg) {
+  var amount = type(this.value) !== 'number'
+    ? size(this.value)
+    : this.value;
+
+  return this.equals(amount < value, true, msg);
+});
+
+/**
+ * Assert that the value is below the specified value.
+ *
+ * @param {Number} value The specified value.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('most, lte', function below(value, msg) {
+  var amount = type(this.value) !== 'number'
+    ? size(this.value)
+    : this.value;
+
+  return this.equals(amount <= value, true, msg);
+});
+
+/**
+ * Assert that that value is within the given range.
+ *
+ * @param {Number} start Lower bound.
+ * @param {Number} finish Upper bound.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('within, between', function within(start, finish, msg) {
+  var amount = type(this.value) !== 'number'
+    ? size(this.value)
+    : this.value;
+
+  return this.equals(amount >= start && amount <= finish, true, msg);
+});
+
+//
+// Create type checks for all build-in JavaScript classes.
+//
+each('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean'
+  + 'new Float32Array,new Float64Array,new Int16Array,new Int32Array,new Int8Array'
+  + 'new Uint16Array,new Uint32Array,new Uint8Array,new Uint8ClampedArray'
+  + 'new ParallelArray,new Map,new Set,new WeakMap,new WeakSet'
+  + 'new DataView(new ArrayBuffer),new ArrayBuffer,new Promise(function(){})'
+  + 'new Blob,arguments,null,undefined'.split(','), function iterate(code) {
+  var name, arg;
+
+  //
+  // Not all of these constructors are supported in the browser, we're going to
+  // compile dedicated functions that returns a new instance of the given
+  // constructor. If it's not supported the code will throw and we will simply
+  // return.
+  //
+  try { arg = (new Function('return '+ code))(); }
+  catch (e) { return; }
+
+  name = type(arg);
+
+  Assert.add(name, function typecheck(msg) {
+    return this.equals(type(this.value), name, msg);
+  });
+});
+
+//
+// Introduce an alternate API:
+//
+// ```js
+// var i = require('assume');
+//
+// i.assume.that('foo').equals('bar');
+// i.sincerely.hope.that('foo').equals('bar');
+// i.expect.that('foo').equals('bar');
+// ```
+//
+Assert.hope = { that: Assert };
+Assert.assign(Assert)('sincerely, expect');
+Assert.assign(Assert)('assume, expect', Assert.hope);
+
+//
+// Expose the module.
+//
+module.exports = Assert;

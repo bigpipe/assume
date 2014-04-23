@@ -1,0 +1,33 @@
+{
+  "name": "assume",
+  "version": "0.0.0",
+  "description": "Expect-like assertions that works seamlessly in node and browsers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/3rd-Eden/assume.git"
+  },
+  "bugs": {
+    "url": "https://github.com/3rd-Eden/assume/issues"
+  },
+  "keywords": [
+    "expect",
+    "assert",
+    "assertion",
+    "asserts",
+    "assume",
+    "testing",
+    "test",
+    "tests",
+    "spec",
+    "should"
+  ],
+  "author": "Arnout Kazemier",
+  "license": "MIT",
+  "devDependencies": {
+    "pre-commit": "0.0.7"
+  }
+}
