@@ -1,6 +1,7 @@
 'use strict';
 
-var Failure = require('./failure')
+var stacktrace = require('./stacktrace')
+  , Failure = require('./failure')
   , pathval = require('pathval');
 
 var toString = Object.prototype.toString
@@ -131,7 +132,7 @@ Assert.alias = function alias(value, assert) {
       flags.diff = assert.diff;
       flags[prop] = true;
 
-      assign(Assert.aliases, new Assert(value, flags));
+      assign(Assert.aliases[prop], new Assert(value, flags));
     } else assign(Assert.aliases);
   }
 
@@ -178,7 +179,7 @@ Assert.add = Assert.assign(Assert.prototype);
  */
 Assert.add('a, an', function typecheck(of, msg) {
   console.log(this);
-  return this.test(type(this.value) === of, msg);
+  return this.test(type(this.value) === of, msg, stacktrace());
 });
 
 /**
@@ -190,7 +191,7 @@ Assert.add('a, an', function typecheck(of, msg) {
  * @api public
  */
 Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg) {
-  return this.test(this.value instanceof constructor, msg);
+  return this.test(this.value instanceof constructor, msg, stacktrace());
 });
 
 /**
@@ -227,7 +228,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
     break;
   }
 
-  return this.test(includes === true, msg);
+  return this.test(includes === true, msg, stacktrace());
 });
 
 /**
@@ -238,7 +239,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
  * @api public
  */
 Assert.add('ok, truthy', function ok(msg) {
-  return this.test(!!this.value === true, msg);
+  return this.test(!!this.value === true, msg, stacktrace());
 });
 
 /**
@@ -249,7 +250,7 @@ Assert.add('ok, truthy', function ok(msg) {
  * @api public
  */
 Assert.add('true', function ok(msg) {
-  return this.test(this.value === true, msg);
+  return this.test(this.value === true, msg, stacktrace());
 });
 
 /**
@@ -259,8 +260,8 @@ Assert.add('true', function ok(msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('false', function ok(msg) {
-  return this.test(this.value === false, msg);
+Assert.add('false', function nope(msg) {
+  return this.test(this.value === false, msg, stacktrace());
 });
 
 /**
@@ -271,7 +272,7 @@ Assert.add('false', function ok(msg) {
  * @api public
  */
 Assert.add('exists', function exists(msg) {
-  return this.test(this.value != null, msg);
+  return this.test(this.value != null, msg, stacktrace());
 });
 
 /**
@@ -282,13 +283,13 @@ Assert.add('exists', function exists(msg) {
  * @api public
  */
 Assert.add('empty', function empty(msg) {
-  return this.test(size(this.value) === 0, msg);
+  return this.test(size(this.value) === 0, msg, stacktrace());
 });
 
 /**
  * Assert that the value is greater than the specified value.
  *
- * @param {Number} value The greather than value.
+ * @param {Number} value The greater than value.
  * @param {String} msg Reason of failure.
  * @returns {Assert}
  * @api public
@@ -298,7 +299,7 @@ Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.test(amount > value, msg);
+  return this.test(amount > value, msg, stacktrace());
 });
 
 /**
@@ -314,7 +315,7 @@ Assert.add('least, gte', function least(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.test(amount >= value, msg);
+  return this.test(amount >= value, msg, stacktrace());
 });
 
 /**
@@ -330,23 +331,23 @@ Assert.add('below, lt, less, lessThan', function below(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.test(amount < value, msg);
+  return this.test(amount < value, msg, stacktrace());
 });
 
 /**
- * Assert that the value is below the specified value.
+ * Assert that the value is below or equal to the specified value.
  *
  * @param {Number} value The specified value.
  * @param {String} msg Reason of failure.
  * @returns {Assert}
  * @api public
  */
-Assert.add('most, lte', function below(value, msg) {
+Assert.add('most, lte', function most(value, msg) {
   var amount = type(this.value) !== 'number'
     ? size(this.value)
     : this.value;
 
-  return this.test(amount <= value, msg);
+  return this.test(amount <= value, msg, stacktrace());
 });
 
 /**
@@ -363,7 +364,7 @@ Assert.add('within, between', function within(start, finish, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.test(amount >= start && amount <= finish, msg);
+  return this.test(amount >= start && amount <= finish, msg, stacktrace());
 });
 
 /**
@@ -375,7 +376,7 @@ Assert.add('within, between', function within(start, finish, msg) {
  * @api public
  */
 Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg) {
-  return this.test(hasOwn.call(this.value, prop), msg);
+  return this.test(hasOwn.call(this.value, prop), msg, stacktrace());
 });
 
 /**
@@ -384,14 +385,21 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg) 
  * @param {Boolean} passed Didn't the test pass or fail.
  * @param {String} msg Custom message provided by users.
  * @param {String} expectation What the assertion expected.
+ * @param {Array} stack Stack trace
  * @returns {Assert}
  * @api private
  */
-Assert.add('test', function test(passed, msg, expectation) {
+Assert.add('test', function test(passed, msg, expectation, stack) {
   if (this.falsely) passed = !passed;
   if (passed) return this;
 
+  if ('array' === type(expectation)) {
+    stack = expectation;
+    expectation = undefined;
+  }
+
   throw new Failure(msg, {
+    stack: stack.slice(4),
     expectation: expectation,
     stacktrace: this.stacktrace
   });
@@ -400,12 +408,12 @@ Assert.add('test', function test(passed, msg, expectation) {
 //
 // Create type checks for all build-in JavaScript classes.
 //
-each('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean'
-  + 'new Float32Array,new Float64Array,new Int16Array,new Int32Array,new Int8Array'
-  + 'new Uint16Array,new Uint32Array,new Uint8Array,new Uint8ClampedArray'
-  + 'new ParallelArray,new Map,new Set,new WeakMap,new WeakSet'
-  + 'new DataView(new ArrayBuffer),new ArrayBuffer,new Promise(function(){})'
-  + 'new Blob,arguments,null,undefined'.split(','), function iterate(code) {
+each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean,'
+  + 'new Float32Array,new Float64Array,new Int16Array,new Int32Array,new Int8Array,'
+  + 'new Uint16Array,new Uint32Array,new Uint8Array,new Uint8ClampedArray,'
+  + 'new ParallelArray,new Map,new Set,new WeakMap,new WeakSet,'
+  + 'new DataView(new ArrayBuffer(1)),new ArrayBuffer(1),new Promise(function(){}),'
+  + 'new Blob,arguments,null,undefined,new Buffer(1)').split(','), function iterate(code) {
   var name, arg;
 
   //
@@ -420,7 +428,7 @@ each('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean'
   name = type(arg);
 
   Assert.add(name, function typecheck(msg) {
-    return this.test(type(this.value) === name, msg);
+    return this.test(type(this.value) === name, msg, stacktrace());
   });
 });
 
