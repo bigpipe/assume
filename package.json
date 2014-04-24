@@ -4,7 +4,7 @@
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha $(find test -name '*.test.js')"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,10 @@
   "author": "Arnout Kazemier",
   "license": "MIT",
   "devDependencies": {
-    "pre-commit": "0.0.7"
+    "pre-commit": "0.0.x",
+    "mocha": "1.18.x"
+  },
+  "dependencies": {
+    "pathval": "0.1.x"
   }
 }

@@ -1,5 +1,8 @@
 'use strict';
 
+var Failure = require('./failure')
+  , pathval = require('pathval');
+
 var toString = Object.prototype.toString
   , hasOwn = Object.prototype.hasOwnProperty;
 
@@ -65,8 +68,11 @@ function Assert(value, flags) {
   if (!(this instanceof Assert)) return new Assert(value, flags);
   flags = flags || {};
 
+  this.stacktrace = 'stacktrace' in flags ? flags.stacktrace : true;
   this.falsely = 'falsely' in flags ? flags.falsely : false;
   this.deeply = 'deeply' in flags ? flags.deeply : false;
+  this.diff = 'diff' in flags ? flags.diff : true;
+  this.value = value;
 
   Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does');
   Assert.alias(value, this);
@@ -115,8 +121,15 @@ Assert.alias = function alias(value, assert) {
 
       for (flag in Assert.aliases) {
         if (!hasOwn.call(Assert.aliases, flag)) continue;
-        flags[prop] = assert[flag];
+        flags[flag] = assert[flag];
       }
+
+      //
+      // Add some default values to the flags.
+      //
+      flags.stacktrace = assert.stacktrace;
+      flags.diff = assert.diff;
+      flags[prop] = true;
 
       assign(Assert.aliases, new Assert(value, flags));
     } else assign(Assert.aliases);
@@ -163,8 +176,9 @@ Assert.add = Assert.assign(Assert.prototype);
  * @returns {Assert}
  * @api public
  */
-Assert.add('a, an', function type(of, msg) {
-  return this.equals(type(this.value), of, msg);
+Assert.add('a, an', function typecheck(of, msg) {
+  console.log(this);
+  return this.test(type(this.value) === of, msg);
 });
 
 /**
@@ -176,7 +190,7 @@ Assert.add('a, an', function type(of, msg) {
  * @api public
  */
 Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg) {
-  return this.equals(this.value instanceof constructor, msg);
+  return this.test(this.value instanceof constructor, msg);
 });
 
 /**
@@ -213,7 +227,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
     break;
   }
 
-  return this.equals(includes, true, msg);
+  return this.test(includes === true, msg);
 });
 
 /**
@@ -224,7 +238,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
  * @api public
  */
 Assert.add('ok, truthy', function ok(msg) {
-  return this.equals(!!this.value, true, msg);
+  return this.test(!!this.value === true, msg);
 });
 
 /**
@@ -235,7 +249,7 @@ Assert.add('ok, truthy', function ok(msg) {
  * @api public
  */
 Assert.add('true', function ok(msg) {
-  return this.equals(this.value, true, msg);
+  return this.test(this.value === true, msg);
 });
 
 /**
@@ -246,7 +260,7 @@ Assert.add('true', function ok(msg) {
  * @api public
  */
 Assert.add('false', function ok(msg) {
-  return this.equals(this.value, false, msg);
+  return this.test(this.value === false, msg);
 });
 
 /**
@@ -257,7 +271,7 @@ Assert.add('false', function ok(msg) {
  * @api public
  */
 Assert.add('exists', function exists(msg) {
-  return this.equals(this.value != null, true, msg);
+  return this.test(this.value != null, msg);
 });
 
 /**
@@ -268,7 +282,7 @@ Assert.add('exists', function exists(msg) {
  * @api public
  */
 Assert.add('empty', function empty(msg) {
-  return this.equals(size(this.value), 0, msg);
+  return this.test(size(this.value) === 0, msg);
 });
 
 /**
@@ -284,7 +298,7 @@ Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.equals(amount > value, true, msg);
+  return this.test(amount > value, msg);
 });
 
 /**
@@ -300,7 +314,7 @@ Assert.add('least, gte', function least(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.equals(amount >= value, true, msg);
+  return this.test(amount >= value, msg);
 });
 
 /**
@@ -316,7 +330,7 @@ Assert.add('below, lt, less, lessThan', function below(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.equals(amount < value, true, msg);
+  return this.test(amount < value, msg);
 });
 
 /**
@@ -332,7 +346,7 @@ Assert.add('most, lte', function below(value, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.equals(amount <= value, true, msg);
+  return this.test(amount <= value, msg);
 });
 
 /**
@@ -349,7 +363,38 @@ Assert.add('within, between', function within(start, finish, msg) {
     ? size(this.value)
     : this.value;
 
-  return this.equals(amount >= start && amount <= finish, true, msg);
+  return this.test(amount >= start && amount <= finish, msg);
+});
+
+/**
+ * Assert that the value has an own property with the given prop.
+ *
+ * @param {String} prop Property name.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg) {
+  return this.test(hasOwn.call(this.value, prop), msg);
+});
+
+/**
+ * Validate the assertion.
+ *
+ * @param {Boolean} passed Didn't the test pass or fail.
+ * @param {String} msg Custom message provided by users.
+ * @param {String} expectation What the assertion expected.
+ * @returns {Assert}
+ * @api private
+ */
+Assert.add('test', function test(passed, msg, expectation) {
+  if (this.falsely) passed = !passed;
+  if (passed) return this;
+
+  throw new Failure(msg, {
+    expectation: expectation,
+    stacktrace: this.stacktrace
+  });
 });
 
 //
@@ -375,7 +420,7 @@ each('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean'
   name = type(arg);
 
   Assert.add(name, function typecheck(msg) {
-    return this.equals(type(this.value), name, msg);
+    return this.test(type(this.value) === name, msg);
   });
 });
 
