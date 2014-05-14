@@ -32,6 +32,7 @@
     "mocha": "1.18.x"
   },
   "dependencies": {
-    "pathval": "0.1.x"
+    "pathval": "0.1.x",
+    "backtrace": "0.0.0"
   }
 }
