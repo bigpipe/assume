@@ -178,7 +178,6 @@ Assert.add = Assert.assign(Assert.prototype);
  * @api public
  */
 Assert.add('a, an', function typecheck(of, msg) {
-  console.log(this);
   return this.test(type(this.value) === of, msg, new BackTrace());
 });
 
@@ -238,8 +237,8 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('ok, truthy', function ok(msg) {
-  return this.test(!!this.value === true, msg, new BackTrace());
+Assert.add('ok, truthy, truly', function ok(msg) {
+  return this.test(Boolean(this.value) === true, msg, new BackTrace());
 });
 
 /**
@@ -262,6 +261,17 @@ Assert.add('true', function ok(msg) {
  */
 Assert.add('false', function nope(msg) {
   return this.test(this.value === false, msg, new BackTrace());
+});
+
+/**
+ * Assert that the value is falsey.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('falsely, falsey', function nope(msg) {
+  return this.test(Boolean(this.value) === false, msg, new BackTrace());
 });
 
 /**
