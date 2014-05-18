@@ -5,14 +5,68 @@ if (typeof global === 'undefined') global = (function that() {
 describe('Assertions', function assertions() {
   'use strict';
 
+  var assume = require('../');
+
   describe('#a', function () {
-    if (global.String) it('classifies strings');
-    if (global.Number) it('classifies numbers');
-    if (global.Array) it('classifies arrays');
-    if (global.Date) it('classifies dates');
-    if (global.Error) it('classifies errors');
-    if (global.RegExp) it('classifies regexps');
-    if (global.Boolean) it('classifies regexps');
+    if (global.String) it('classifies strings', function (next) {
+      assume(String('foo')).to.be.a('string');
+      assume('string').to.be.a('string');
+
+      try { assume(['array']).to.be.a('string'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Number) it('classifies numbers', function (next) {
+      assume(Number('0.1')).to.be.a('number');
+      assume(0).to.be.a('number');
+
+      try { assume(['array']).to.be.a('number'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Array) it('classifies arrays', function (next) {
+      assume(new Array(99)).to.be.a('array');
+      assume([]).to.be.a('array');
+
+      try { assume(arguments).to.be.a('array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Date) it('classifies dates', function (next) {
+      assume(new Date()).to.be.a('date');
+
+      try { assume('2014/04/04').to.be.a('date'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Error) it('classifies errors', function (next) {
+      assume(new Error('foo')).to.be.a('error');
+
+      try { assume('foo').to.be.a('error'); }
+      catch (e) {
+        assume(e).to.be.a('error');
+        next();
+      }
+    });
+
+    if (global.RegExp) it('classifies regexps', function (next) {
+      assume(new RegExp('foo', 'm')).to.be.a('regexp');
+      assume(/foo/).to.be.a('regexp');
+
+      try { assume('/regexp/').to.be.a('regexp'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Boolean) it('classifies booleans', function (next) {
+      assume(Boolean(0)).to.be.a('boolean');
+      assume(Boolean(1)).to.be.a('boolean');
+      assume(false).to.be.a('boolean');
+      assume(true).to.be.a('boolean');
+
+      try { assume('true').to.be.a('boolean'); }
+      catch (e) { next(); }
+    });
+
     if (global.Float32Array) it('classifies float32arrays');
     if (global.Float64Array) it('classifies float64arrays');
     if (global.int16Array) it('classifies int16arrays');
