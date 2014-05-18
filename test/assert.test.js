@@ -71,5 +71,14 @@ describe('Assertions', function assertions() {
     if (global.Float64Array) it('classifies float64arrays');
     if (global.int16Array) it('classifies int16arrays');
     if (global.int32Array) it('classifies int32arrays');
+
+    it('is aliased as `an`', function () {
+      var x = assume('foo');
+
+      if (x.a !== x.an) throw new Error('Incorrectly aliased');
+
+      x.to.be.an('string');
+      x.to.be.a('string');
+    });
   });
 });
