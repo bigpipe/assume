@@ -35,5 +35,14 @@
     "backtrace": "0.0.x",
     "deep-eql": "0.1.x",
     "pathval": "0.1.x"
+  },
+  "testling": {
+    "harness": "mocha-bdd",
+    "files": "test/*.js",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/latest",
+      "firefox/latest"
+    ]
   }
 }
