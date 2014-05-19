@@ -59,6 +59,9 @@ function each(arr, fn) {
  *
  * - **falsely**: Assert for a false instead of true.
  * - **deeply**:  Ensure a deep match of the given object.
+ * - **stacktrace**: Include stacktrace in the assertion.
+ * - **diff**: Attempt to show the difference in object/values so we know why
+ *   the assertion failed.
  *
  * @constructor
  * @param {Mixed} value Value we need to assert.
@@ -69,15 +72,32 @@ function Assert(value, flags) {
   if (!(this instanceof Assert)) return new Assert(value, flags);
   flags = flags || {};
 
-  this.stacktrace = 'stacktrace' in flags ? flags.stacktrace : true;
+  this.stacktrace = 'stacktrace' in flags ? flags.stacktrace : Assert.config.includeStack;
+  this.diff = 'diff' in flags ? flags.diff : Assert.config.showDiff;
+
+  //
+  // These flags are by the alias function so we can generate .not and .deep
+  // properties which are basically new Assert instances with these flags set.
+  //
   this.falsely = 'falsely' in flags ? flags.falsely : false;
   this.deeply = 'deeply' in flags ? flags.deeply : false;
-  this.diff = 'diff' in flags ? flags.diff : true;
   this.value = value;
 
   Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does');
   Assert.alias(value, this);
 }
+
+/**
+ * Attempt to mimic the configuration API of chai.js so it's dead simple to
+ * migrate from chai.js to assume.
+ *
+ * @type {Object}
+ * @public
+ */
+Assert.config = {
+  includeStack: true,     // mapped to `stacktrace` as default value.
+  showDiff: true          // mapped to `diff` as default value.
+};
 
 /**
  * Assign values to a given thing.
