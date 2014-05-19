@@ -32,7 +32,8 @@
     "mocha": "1.18.x"
   },
   "dependencies": {
-    "pathval": "0.1.x",
-    "backtrace": "0.0.0"
+    "backtrace": "0.0.x",
+    "deep-eql": "0.1.x",
+    "pathval": "0.1.x"
   }
 }

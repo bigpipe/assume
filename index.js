@@ -2,7 +2,8 @@
 
 var BackTrace = require('backtrace')
   , Failure = require('./failure')
-  , pathval = require('pathval');
+  , pathval = require('pathval')
+  , deep = require('deep-eql');
 
 var toString = Object.prototype.toString
   , hasOwn = Object.prototype.hasOwnProperty;
@@ -407,6 +408,32 @@ Assert.add('within, between', function within(start, finish, msg) {
  */
 Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg) {
   return this.test(hasOwn.call(this.value, prop), msg, new BackTrace());
+});
+
+/**
+ * Assert that the value equals a given thing.
+ *
+ * @param {Mixed} thing Thing it should equal.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('equal, equals, eq', function equal(thing, msg) {
+  if (!this.deeply) return this.test(this.value === thing, msg, new BackTrace());
+
+  return this.eql(thing, msg);
+});
+
+/**
+ * Assert that the value **deeply** equals a given thing.
+ *
+ * @param {Mixed} thing Thing it should equal.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('eql, eqls', function eqls(thing, msg) {
+  return this.test(deep(this.value, thing), msg, new BackTrace());
 });
 
 /**
