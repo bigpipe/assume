@@ -1,4 +1,4 @@
-if (typeof global === 'undefined') global = (function that() {
+if ('undefined' === typeof global) global = (function that() {
   return this;
 }());
 
