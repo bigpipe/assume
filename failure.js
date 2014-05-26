@@ -25,11 +25,14 @@ function Failure(msg, options) {
   this._stacktrace = 'stacktrace' in options ? options.stacktrace : true;
   this._expectation = 'expectation' in options ? options.expectation : '';
   this._stack = options.stack;
+  this.message = [
+    msg || 'Unexpected assertation failure',
+    this._expectation
+  ].filter(Boolean).join(', ');
 
   //
   // The actual message that displays in your console.
   //
-  this.message = msg || 'Unexpected assertation failure';
   this.stack = this.message + (
     this._stacktrace
     ? '\n'+ options.stack.toString()

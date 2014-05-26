@@ -506,7 +506,7 @@ each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean
   name = type(arg);
 
   Assert.add(name, function typecheck(msg, stack) {
-    return this.test(type(this.value) === name, msg, stack || new BackTrace());
+    return this.equal(type(this.value), name, msg, stack || new BackTrace());
   });
 });
 
