@@ -10,14 +10,15 @@
  * - **expectation**: What we expected that would happen.
  *
  * @constructor
- * @param {String} msg The reason of failure.
+ * @param {String} message The reason of failure.
  * @param {Object} options Failure configuration.
  * @api private
  */
-function Failure(msg, options) {
-  if (!(this instanceof Failure)) return new Failure(msg, options);
+function Failure(message, options) {
+  if (!(this instanceof Failure)) return new Failure(message, options);
 
   options = options || {};
+  this.message = message || 'Unknown assertation failure occured';
 
   //
   // Private variables.
@@ -25,10 +26,9 @@ function Failure(msg, options) {
   this._stacktrace = 'stacktrace' in options ? options.stacktrace : true;
   this._expectation = 'expectation' in options ? options.expectation : '';
   this._stack = options.stack;
-  this.message = [
-    msg || 'Unexpected assertation failure',
-    this._expectation
-  ].filter(Boolean).join(', ');
+
+  if (this._expectation) this._expectation = ', assumed '+ this._expectation;
+  this.message += this._expectation;
 
   //
   // The actual message that displays in your console.

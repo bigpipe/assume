@@ -20,6 +20,43 @@ function type(of) {
 }
 
 /**
+ * Detect the display name of a given function.
+ *
+ * @param {Mixed} fn Function of class who's name is unknown
+ * @api private
+ */
+function displayName(fn) {
+  //
+  // WebKit and Safari expose a displayName property which contains the name of
+  // the set function.
+  //
+  if (fn.displayName) return fn.displayName;
+
+  //
+  // Check to see if the constructor has a name
+  //
+  if (
+       'object' === typeof fn
+    && fn.constructor
+    && 'string' === typeof fn.constructor.name
+  ) return fn.constructor.name;
+
+  //
+  // Not a constructor, but we do have a name prop, use that instead.
+  //
+  if ('string' === fn.name) return fn.name;
+
+  //
+  // toString the given function and attempt to parse it out of it, or determine
+  // the class.
+  //
+  var named = fn.toString();
+  return 'function' === type(fn)
+    ? named.substring(named.indexOf('(') + 1, named.indexOf(')'))
+    : toString.call(fn).slice(8, -1);
+}
+
+/**
  * Determine the size of a collection.
  *
  * @param {Mixed} collection The object we want to know the size of.
@@ -200,7 +237,10 @@ Assert.add = Assert.assign(Assert.prototype);
  * @api public
  */
 Assert.add('a, an', function typecheck(of, msg, stack) {
-  return this.equal(type(this.value), of, msg, stack || new BackTrace());
+  var value = type(this.value)
+    , expect = value +' to be a '+ of;
+
+  return this.test(value === of, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -213,7 +253,9 @@ Assert.add('a, an', function typecheck(of, msg, stack) {
  * @api public
  */
 Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg, stack) {
-  return this.test(this.value instanceof constructor, msg, stack || new BackTrace());
+  var expect = displayName(this.value) +' to be instanceof '+ displayName(constructor);
+
+  return this.test(this.value instanceof constructor, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -226,9 +268,11 @@ Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor,
  * @api public
  */
 Assert.add('include, includes, contain, contains', function contain(val, msg, stack) {
-  var includes = false;
+  var of = type(this.value)
+    , includes = false
+    , expect = of +' to include '+ val;
 
-  switch (type(this.value)) {
+  switch (of) {
     case 'array':
       for (var i = 0, length = this.value.length; i < length; i++) {
         if (val === this.value[i]) {
@@ -251,7 +295,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg, st
     break;
   }
 
-  return this.test(includes === true, msg, stack || new BackTrace());
+  return this.test(includes === true, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -312,6 +356,19 @@ Assert.add('falsely, falsey', function nope(msg, stack) {
  */
 Assert.add('exists', function exists(msg, stack) {
   return this.test(this.value != null, msg, stack || new BackTrace());
+});
+
+/**
+ * Asserts that the value's length is the given value.
+ *
+ * @param {Number} value Size of the value.
+ * @param {String} msg Reason of failure.
+ * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('length, lengthOf, size', function length(value, msg, stack) {
+  return this.test(size(this.value) === +value, msg, stack || new BackTrace());
 });
 
 /**
@@ -471,6 +528,8 @@ Assert.add('test', function test(passed, msg, expectation, stack) {
   if (this.falsely) passed = !passed;
   if (passed) return this;
 
+  console.log(msg);
+
   if (expectation instanceof BackTrace) {
     stack = expectation;
     expectation = undefined;
@@ -506,7 +565,7 @@ each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean
   name = type(arg);
 
   Assert.add(name, function typecheck(msg, stack) {
-    return this.equal(type(this.value), name, msg, stack || new BackTrace());
+    return this.test(type(this.value) === name, msg, stack || new BackTrace());
   });
 });
 
