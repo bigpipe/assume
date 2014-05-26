@@ -199,7 +199,7 @@ Assert.add = Assert.assign(Assert.prototype);
  * @api public
  */
 Assert.add('a, an', function typecheck(of, msg) {
-  return this.test(type(this.value) === of, msg, new BackTrace());
+  return this.equal(type(this.value), of, msg, new BackTrace());
 });
 
 /**
@@ -415,11 +415,14 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg) 
  *
  * @param {Mixed} thing Thing it should equal.
  * @param {String} msg Reason of failure.
+ * @param {BackTrace} trace Custom stack trace.
  * @returns {Assert}
  * @api public
  */
-Assert.add('equal, equals, eq', function equal(thing, msg) {
-  if (!this.deeply) return this.test(this.value === thing, msg, new BackTrace());
+Assert.add('equal, equals, eq', function equal(thing, msg, trace) {
+  if (!this.deeply) {
+    return this.test(this.value === thing, msg, thing +' to equal '+ this.value, trace || new BackTrace());
+  }
 
   return this.eql(thing, msg);
 });
