@@ -19,14 +19,24 @@ function Failure(msg, options) {
 
   options = options || {};
 
-  this.message = msg || 'Unexpected assertation failure';
+  //
+  // Private variables.
+  //
   this._stacktrace = 'stacktrace' in options ? options.stacktrace : true;
   this._expectation = 'expectation' in options ? options.expectation : '';
-  this.stack = options.stack;
+  this._stack = options.stack;
+
+  //
+  // The actual message that displays in your console.
+  //
+  this.message = msg || 'Unexpected assertation failure';
+  this.stack = this.message + (
+    this._stacktrace
+    ? '\n'+ options.stack.toString()
+    : ''
+  );
 
   Error.call(this, this.message);
-
-  console.log(options.stack);
 }
 
 //
@@ -44,7 +54,9 @@ Failure.prototype.constructor = Failure;
 Failure.prototype.toJSON = function toJSON() {
   return {
     message: this.message,
-    stack: this.stack.traces
+    stack: this._stacktrace
+      ? this._stack.traces
+      : []
   };
 };
 

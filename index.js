@@ -450,7 +450,7 @@ Assert.add('test', function test(passed, msg, expectation, stack) {
   if (this.falsely) passed = !passed;
   if (passed) return this;
 
-  if ('array' === type(expectation)) {
+  if (expectation instanceof BackTrace) {
     stack = expectation;
     expectation = undefined;
   }
