@@ -408,11 +408,10 @@ Assert.add('empty', function empty(msg, stack) {
  * @api public
  */
 Assert.add('above, gt, greater, greaterThan', function above(value, msg, stack) {
-  var amount = type(this.value) !== 'number'
-    ? size(this.value)
-    : this.value;
+  var amount = type(this.value) !== 'number' ? size(this.value) : this.value
+    , expect = amount +' to @ be greater than '+ value;
 
-  return this.test(amount > value, msg, stack || new BackTrace());
+  return this.test(amount > value, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -425,11 +424,10 @@ Assert.add('above, gt, greater, greaterThan', function above(value, msg, stack) 
  * @api public
  */
 Assert.add('least, gte', function least(value, msg, stack) {
-  var amount = type(this.value) !== 'number'
-    ? size(this.value)
-    : this.value;
+  var amount = type(this.value) !== 'number' ? size(this.value) : this.value
+    , expect = amount +' to @ be greater or equal to '+ value;
 
-  return this.test(amount >= value, msg, stack || new BackTrace());
+  return this.test(amount >= value, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -442,11 +440,10 @@ Assert.add('least, gte', function least(value, msg, stack) {
  * @api public
  */
 Assert.add('below, lt, less, lessThan', function below(value, msg, stack) {
-  var amount = type(this.value) !== 'number'
-    ? size(this.value)
-    : this.value;
+  var amount = type(this.value) !== 'number' ? size(this.value) : this.value
+    , expect = amount +' to @ be less than '+ value;
 
-  return this.test(amount < value, msg, stack || new BackTrace());
+  return this.test(amount < value, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -459,11 +456,10 @@ Assert.add('below, lt, less, lessThan', function below(value, msg, stack) {
  * @api public
  */
 Assert.add('most, lte', function most(value, msg, stack) {
-  var amount = type(this.value) !== 'number'
-    ? size(this.value)
-    : this.value;
+  var amount = type(this.value) !== 'number' ? size(this.value) : this.value
+    , expect = amount +' to @ be less or equal to '+ value;
 
-  return this.test(amount <= value, msg, stack || new BackTrace());
+  return this.test(amount <= value, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -477,11 +473,10 @@ Assert.add('most, lte', function most(value, msg, stack) {
  * @api public
  */
 Assert.add('within, between', function within(start, finish, msg, stack) {
-  var amount = type(this.value) !== 'number'
-    ? size(this.value)
-    : this.value;
+  var amount = type(this.value) !== 'number' ? size(this.value) : this.value
+    , expect = amount +' to @ be greater or equal to '+ start +' and @ be less or equal to'+ finish;
 
-  return this.test(amount >= start && amount <= finish, msg, stack || new BackTrace());
+  return this.test(amount >= start && amount <= finish, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -494,7 +489,9 @@ Assert.add('within, between', function within(start, finish, msg, stack) {
  * @api public
  */
 Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg, stack) {
-  return this.test(hasOwn.call(this.value, prop), msg, stack || new BackTrace());
+  var expect = 'object @ to have own property '+ prop;
+
+  return this.test(hasOwn.call(this.value, prop), msg, expect,  stack || new BackTrace());
 });
 
 /**
@@ -507,7 +504,9 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg, 
  * @api public
  */
 Assert.add('match, test', function test(regex, msg, stack) {
-  return this.test(!!regex.exec(this.value), msg, stack || new BackTrace());
+  var expect = this.value +' to @ match '+ regex;
+
+  return this.test(!!regex.exec(this.value), msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -520,13 +519,13 @@ Assert.add('match, test', function test(regex, msg, stack) {
  * @api public
  */
 Assert.add('equal, equals, eq', function equal(thing, msg, stack) {
-  if (!this.deeply) return this.test(
-    this.value === thing, msg,
-    thing +' to equal '+ this.value,
-    stack || new BackTrace()
-  );
+  var expect = this.value +' to @ equal (===) '+ thing;
 
-  return this.eql(thing, msg);
+  stack = stack || new BackTrace();
+
+  if (!this.deeply) return this.test( this.value === thing, msg, expect, stack);
+
+  return this.eql(thing, msg, stack);
 });
 
 /**
@@ -539,7 +538,9 @@ Assert.add('equal, equals, eq', function equal(thing, msg, stack) {
  * @api public
  */
 Assert.add('eql, eqls', function eqls(thing, msg, stack) {
-  return this.test(deep(this.value, thing), msg, stack || new BackTrace());
+  var expect = this.value +' to deeply equal '+ thing;
+
+  return this.test(deep(this.value, thing), msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -562,8 +563,8 @@ Assert.add('test', function test(passed, msg, expectation, stack) {
   }
 
   if (expectation && expectation.indexOf('@')) {
-    if (this.falsely) expectation = expectation.replace('@ ', 'not');
-    else expectation = expectation.replace('@ ', '');
+    if (this.falsely) expectation = expectation.replace(/\@\s/g, 'not');
+    else expectation = expectation.replace(/\@\s/g, '');
   }
 
   throw new Failure(msg, {
@@ -596,7 +597,10 @@ each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean
   name = type(arg);
 
   Assert.add(name, function typecheck(msg, stack) {
-    return this.test(type(this.value) === name, msg, stack || new BackTrace());
+    var of = type(this.value)
+      , expect = of +' to @ be an '+ name;
+
+    return this.test(of === name, msg, expect, stack || new BackTrace());
   });
 });
 
