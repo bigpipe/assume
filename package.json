@@ -1,6 +1,6 @@
 {
   "name": "assume",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   "license": "MIT",
   "devDependencies": {
     "pre-commit": "0.0.x",
-    "mocha": "1.18.x"
+    "mocha": "1.19.x"
   },
   "dependencies": {
     "backtrace": "0.0.x",
