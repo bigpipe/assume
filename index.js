@@ -121,7 +121,7 @@ function Assert(value, flags) {
   this.deeply = 'deeply' in flags ? flags.deeply : false;
   this.value = value;
 
-  Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does');
+  Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does, itself');
   Assert.alias(value, this);
 }
 
@@ -483,6 +483,19 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg, 
 });
 
 /**
+ * Asserts that the value matches a regular expression.
+ *
+ * @param {RegExp} regex Regular expression to match against.
+ * @param {String} msg Reason of failure.
+ * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('match, test', function test(regex, msg, stack) {
+  return this.test(!!regex.exec(this.value), msg, stack || new BackTrace());
+});
+
+/**
  * Assert that the value equals a given thing.
  *
  * @param {Mixed} thing Thing it should equal.
@@ -527,8 +540,6 @@ Assert.add('eql, eqls', function eqls(thing, msg, stack) {
 Assert.add('test', function test(passed, msg, expectation, stack) {
   if (this.falsely) passed = !passed;
   if (passed) return this;
-
-  console.log(msg);
 
   if (expectation instanceof BackTrace) {
     stack = expectation;
