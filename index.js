@@ -74,7 +74,8 @@ function size(collection) {
     return i;
   }
 
-  return +collection.length || 0;
+  try { return +collection.length || 0; }
+  catch (e) { return 0; }
 }
 
 /**
@@ -238,7 +239,7 @@ Assert.add = Assert.assign(Assert.prototype);
  */
 Assert.add('a, an', function typecheck(of, msg, stack) {
   var value = type(this.value)
-    , expect = value +' to be a '+ of;
+    , expect = value +' to @ be a '+ of;
 
   return this.test(value === of, msg, expect, stack || new BackTrace());
 });
@@ -253,7 +254,7 @@ Assert.add('a, an', function typecheck(of, msg, stack) {
  * @api public
  */
 Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg, stack) {
-  var expect = displayName(this.value) +' to be instanceof '+ displayName(constructor);
+  var expect = displayName(this.value) +' to @ be an instanceof '+ displayName(constructor);
 
   return this.test(this.value instanceof constructor, msg, expect, stack || new BackTrace());
 });
@@ -270,7 +271,7 @@ Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor,
 Assert.add('include, includes, contain, contains', function contain(val, msg, stack) {
   var of = type(this.value)
     , includes = false
-    , expect = of +' to include '+ val;
+    , expect = of +' to @ include '+ val;
 
   switch (of) {
     case 'array':
@@ -307,7 +308,9 @@ Assert.add('include, includes, contain, contains', function contain(val, msg, st
  * @api public
  */
 Assert.add('ok, truthy, truly', function ok(msg, stack) {
-  return this.test(Boolean(this.value) === true, msg, stack || new BackTrace());
+  var expect = '"'+ this.value +'" to @ be truthy';
+
+  return this.test(Boolean(this.value), msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -319,7 +322,9 @@ Assert.add('ok, truthy, truly', function ok(msg, stack) {
  * @api public
  */
 Assert.add('true', function ok(msg, stack) {
-  return this.test(this.value === true, msg, stack || new BackTrace());
+  var expect = this.value +' to @ equal (===) true';
+
+  return this.test(this.value === true, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -330,8 +335,10 @@ Assert.add('true', function ok(msg, stack) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('false', function nope(msg) {
-  return this.test(this.value === false, msg, stack || new BackTrace());
+Assert.add('false', function nope(msg, stack) {
+  var expect = this.value +' to @ equal (===) false';
+
+  return this.test(this.value === false, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -343,7 +350,9 @@ Assert.add('false', function nope(msg) {
  * @api public
  */
 Assert.add('falsely, falsey', function nope(msg, stack) {
-  return this.test(Boolean(this.value) === false, msg, stack || new BackTrace());
+  var expect = '"'+ this.value +'" to @ be falsely';
+
+  return this.test(Boolean(this.value) === false, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -354,8 +363,10 @@ Assert.add('falsely, falsey', function nope(msg, stack) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('exists', function exists(msg, stack) {
-  return this.test(this.value != null, msg, stack || new BackTrace());
+Assert.add('exists, exist', function exists(msg, stack) {
+  var expect = '"'+ this.value +'" to @ exist';
+
+  return this.test(this.value != null, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -368,7 +379,9 @@ Assert.add('exists', function exists(msg, stack) {
  * @api public
  */
 Assert.add('length, lengthOf, size', function length(value, msg, stack) {
-  return this.test(size(this.value) === +value, msg, stack || new BackTrace());
+  var expect = type(this.value) +' to @ have a length of '+ value;
+
+  return this.test(size(this.value) === +value, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -380,7 +393,9 @@ Assert.add('length, lengthOf, size', function length(value, msg, stack) {
  * @api public
  */
 Assert.add('empty', function empty(msg, stack) {
-  return this.test(size(this.value) === 0, msg, stack || new BackTrace());
+  var expect = type(this.value) +' to @ be empty';
+
+  return this.test(size(this.value) === 0, msg, expect, stack || new BackTrace());
 });
 
 /**
@@ -544,6 +559,11 @@ Assert.add('test', function test(passed, msg, expectation, stack) {
   if (expectation instanceof BackTrace) {
     stack = expectation;
     expectation = undefined;
+  }
+
+  if (expectation && expectation.indexOf('@')) {
+    if (this.falsely) expectation = expectation.replace('@ ', 'not');
+    else expectation = expectation.replace('@ ', '');
   }
 
   throw new Failure(msg, {
