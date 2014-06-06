@@ -26,6 +26,8 @@ function type(of) {
  * @api private
  */
 function displayName(fn) {
+  if (!fn) return 'undefined';
+
   //
   // WebKit and Safari expose a displayName property which contains the name of
   // the set function.
