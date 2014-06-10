@@ -273,7 +273,7 @@ Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor,
 Assert.add('include, includes, contain, contains', function contain(val, msg, stack) {
   var of = type(this.value)
     , includes = false
-    , expect = of +' to @ include '+ val;
+    , expect = JSON.stringify(this.value) +' to @ include '+ val;
 
   switch (of) {
     case 'array':
