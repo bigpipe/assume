@@ -240,6 +240,8 @@ Assert.add = Assert.assign(Assert.prototype);
  * @api public
  */
 Assert.add('a, an', function typecheck(of, msg, stack) {
+  of = (of || '').toLowerCase();
+
   var value = type(this.value)
     , expect = value +' to @ be a '+ of;
 
