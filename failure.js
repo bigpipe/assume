@@ -30,16 +30,8 @@ function Failure(message, options) {
   if (this._expectation) this._expectation = ', assumed '+ this._expectation;
   this.message += this._expectation;
 
-  //
-  // The actual message that displays in your console.
-  //
-  this.stack = this.message + (
-    this._stacktrace
-    ? '\n'+ options.stack.toString()
-    : ''
-  );
-
   Error.call(this, this.message);
+  if (!this._stacktrace) this.stack = '';
 }
 
 //
