@@ -1,6 +1,6 @@
 {
   "name": "assume",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
