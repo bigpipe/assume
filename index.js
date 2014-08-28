@@ -492,7 +492,7 @@ Assert.add('within, between', function within(start, finish, msg, stack) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('hasOwn, own, ownProperty, haveOwnProperty', function has(prop, msg, stack) {
+Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property', function has(prop, msg, stack) {
   var expect = 'object @ to have own property '+ prop;
 
   return this.test(hasOwn.call(this.value, prop), msg, expect,  stack || new BackTrace());
