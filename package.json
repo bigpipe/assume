@@ -40,7 +40,8 @@
   "dependencies": {
     "backtrace": "0.0.x",
     "deep-eql": "0.1.x",
-    "pathval": "0.1.x"
+    "pathval": "0.1.x",
+    "prettify-error": "0.1.x"
   },
   "testling": {
     "harness": "mocha-bdd",

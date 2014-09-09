@@ -1,7 +1,6 @@
 'use strict';
 
-var BackTrace = require('backtrace')
-  , Failure = require('./failure')
+var pretty = require('prettify-error')
   , pathval = require('pathval')
   , deep = require('deep-eql');
 
@@ -23,6 +22,7 @@ function type(of) {
  * Detect the display name of a given function.
  *
  * @param {Mixed} fn Function of class who's name is unknown
+ * @returns {String}
  * @api private
  */
 function displayName(fn) {
@@ -235,17 +235,16 @@ Assert.add = Assert.assign(Assert.prototype);
  *
  * @param {String} of Type of class it should equal
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('a, an', function typecheck(of, msg, stack) {
+Assert.add('a, an', function typecheck(of, msg) {
   of = (of || '').toLowerCase();
 
   var value = type(this.value)
     , expect = value +' to @ be a '+ of;
 
-  return this.test(value === of, msg, expect, stack || new BackTrace());
+  return this.test(value === of, msg, expect);
 });
 
 /**
@@ -253,14 +252,13 @@ Assert.add('a, an', function typecheck(of, msg, stack) {
  *
  * @param {Function} constructor Constructur the value should inherit from.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg, stack) {
+Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg) {
   var expect = displayName(this.value) +' to @ be an instanceof '+ displayName(constructor);
 
-  return this.test(this.value instanceof constructor, msg, expect, stack || new BackTrace());
+  return this.test(this.value instanceof constructor, msg, expect);
 });
 
 /**
@@ -268,11 +266,10 @@ Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor,
  *
  * @param {Mixed} val Value to match.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('include, includes, contain, contains', function contain(val, msg, stack) {
+Assert.add('include, includes, contain, contains', function contain(val, msg) {
   var of = type(this.value)
     , includes = false
     , expect = JSON.stringify(this.value) +' to @ include '+ val;
@@ -300,77 +297,72 @@ Assert.add('include, includes, contain, contains', function contain(val, msg, st
     break;
   }
 
-  return this.test(includes === true, msg, expect, stack || new BackTrace());
+  return this.test(includes === true, msg, expect);
 });
 
 /**
  * Assert that the value is truthy.
  *
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('ok, truthy, truly', function ok(msg, stack) {
+Assert.add('ok, truthy, truly', function ok(msg) {
   var expect = '"'+ this.value +'" to @ be truthy';
 
-  return this.test(Boolean(this.value), msg, expect, stack || new BackTrace());
+  return this.test(Boolean(this.value), msg, expect);
 });
 
 /**
  * Assert that the value is `true`.
  *
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('true', function ok(msg, stack) {
+Assert.add('true', function ok(msg) {
   var expect = this.value +' to @ equal (===) true';
 
-  return this.test(this.value === true, msg, expect, stack || new BackTrace());
+  return this.test(this.value === true, msg, expect);
 });
 
 /**
  * Assert that the value is `true`.
  *
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('false', function nope(msg, stack) {
+Assert.add('false', function nope(msg) {
   var expect = this.value +' to @ equal (===) false';
 
-  return this.test(this.value === false, msg, expect, stack || new BackTrace());
+  return this.test(this.value === false, msg, expect);
 });
 
 /**
  * Assert that the value is falsey.
  *
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('falsely, falsey', function nope(msg, stack) {
+Assert.add('falsely, falsey', function nope(msg) {
   var expect = '"'+ this.value +'" to @ be falsely';
 
-  return this.test(Boolean(this.value) === false, msg, expect, stack || new BackTrace());
+  return this.test(Boolean(this.value) === false, msg, expect);
 });
 
 /**
  * Assert that the value exists.
  *
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('exists, exist', function exists(msg, stack) {
+Assert.add('exists, exist', function exists(msg) {
   var expect = '"'+ this.value +'" to @ exist';
 
-  return this.test(this.value != null, msg, expect, stack || new BackTrace());
+  return this.test(this.value != null, msg, expect);
 });
 
 /**
@@ -378,28 +370,26 @@ Assert.add('exists, exist', function exists(msg, stack) {
  *
  * @param {Number} value Size of the value.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('length, lengthOf, size', function length(value, msg, stack) {
+Assert.add('length, lengthOf, size', function length(value, msg) {
   var expect = type(this.value) +' to @ have a length of '+ value;
 
-  return this.test(size(this.value) === +value, msg, expect, stack || new BackTrace());
+  return this.test(size(this.value) === +value, msg, expect);
 });
 
 /**
  * Asserts that the value's length is 0 or doesn't contain any enumerable keys.
  *
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('empty', function empty(msg, stack) {
+Assert.add('empty', function empty(msg) {
   var expect = type(this.value) +' to @ be empty';
 
-  return this.test(size(this.value) === 0, msg, expect, stack || new BackTrace());
+  return this.test(size(this.value) === 0, msg, expect);
 });
 
 /**
@@ -407,15 +397,14 @@ Assert.add('empty', function empty(msg, stack) {
  *
  * @param {Number} value The greater than value.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('above, gt, greater, greaterThan', function above(value, msg, stack) {
+Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be greater than '+ value;
 
-  return this.test(amount > value, msg, expect, stack || new BackTrace());
+  return this.test(amount > value, msg, expect);
 });
 
 /**
@@ -423,15 +412,14 @@ Assert.add('above, gt, greater, greaterThan', function above(value, msg, stack) 
  *
  * @param {Number} value The specified value.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('least, gte', function least(value, msg, stack) {
+Assert.add('least, gte', function least(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be greater or equal to '+ value;
 
-  return this.test(amount >= value, msg, expect, stack || new BackTrace());
+  return this.test(amount >= value, msg, expect);
 });
 
 /**
@@ -439,15 +427,14 @@ Assert.add('least, gte', function least(value, msg, stack) {
  *
  * @param {Number} value The specified value.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('below, lt, less, lessThan', function below(value, msg, stack) {
+Assert.add('below, lt, less, lessThan', function below(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be less than '+ value;
 
-  return this.test(amount < value, msg, expect, stack || new BackTrace());
+  return this.test(amount < value, msg, expect);
 });
 
 /**
@@ -455,15 +442,14 @@ Assert.add('below, lt, less, lessThan', function below(value, msg, stack) {
  *
  * @param {Number} value The specified value.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('most, lte', function most(value, msg, stack) {
+Assert.add('most, lte', function most(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be less or equal to '+ value;
 
-  return this.test(amount <= value, msg, expect, stack || new BackTrace());
+  return this.test(amount <= value, msg, expect);
 });
 
 /**
@@ -472,15 +458,14 @@ Assert.add('most, lte', function most(value, msg, stack) {
  * @param {Number} start Lower bound.
  * @param {Number} finish Upper bound.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('within, between', function within(start, finish, msg, stack) {
+Assert.add('within, between', function within(start, finish, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be greater or equal to '+ start +' and @ be less or equal to'+ finish;
 
-  return this.test(amount >= start && amount <= finish, msg, expect, stack || new BackTrace());
+  return this.test(amount >= start && amount <= finish, msg, expect);
 });
 
 /**
@@ -488,14 +473,13 @@ Assert.add('within, between', function within(start, finish, msg, stack) {
  *
  * @param {String} prop Property name.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property', function has(prop, msg, stack) {
+Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property', function has(prop, msg) {
   var expect = 'object @ to have own property '+ prop;
 
-  return this.test(hasOwn.call(this.value, prop), msg, expect,  stack || new BackTrace());
+  return this.test(hasOwn.call(this.value, prop), msg, expect);
 });
 
 /**
@@ -503,14 +487,13 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property', function has(p
  *
  * @param {RegExp} regex Regular expression to match against.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('match, test', function test(regex, msg, stack) {
+Assert.add('match, test', function test(regex, msg) {
   var expect = this.value +' to @ match '+ regex;
 
-  return this.test(!!regex.exec(this.value), msg, expect, stack || new BackTrace());
+  return this.test(!!regex.exec(this.value), msg, expect);
 });
 
 /**
@@ -518,18 +501,14 @@ Assert.add('match, test', function test(regex, msg, stack) {
  *
  * @param {Mixed} thing Thing it should equal.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
  * @returns {Assert}
  * @api public
  */
-Assert.add('equal, equals, eq', function equal(thing, msg, stack) {
+Assert.add('equal, equals, eq', function equal(thing, msg) {
   var expect = this.value +' to @ equal (===) '+ thing;
 
-  stack = stack || new BackTrace();
-
-  if (!this.deeply) return this.test( this.value === thing, msg, expect, stack);
-
-  return this.eql(thing, msg, stack);
+  if (!this.deeply) return this.test(this.value === thing, msg, expect);
+  return this.eql(thing, msg, 3);
 });
 
 /**
@@ -537,14 +516,14 @@ Assert.add('equal, equals, eq', function equal(thing, msg, stack) {
  *
  * @param {Mixed} thing Thing it should equal.
  * @param {String} msg Reason of failure.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
+ * @param {Number} slice Amount of stacktraces to slice off.
  * @returns {Assert}
  * @api public
  */
-Assert.add('eql, eqls', function eqls(thing, msg, stack) {
+Assert.add('eql, eqls', function eqls(thing, msg, slice) {
   var expect = this.value +' to deeply equal '+ thing;
 
-  return this.test(deep(this.value, thing), msg, expect, stack || new BackTrace());
+  return this.test(deep(this.value, thing), msg, expect, slice);
 });
 
 /**
@@ -553,29 +532,29 @@ Assert.add('eql, eqls', function eqls(thing, msg, stack) {
  * @param {Boolean} passed Didn't the test pass or fail.
  * @param {String} msg Custom message provided by users.
  * @param {String} expectation What the assertion expected.
- * @param {BackTrace} stack Optional Backtrace instance for proper stacktraces.
+ * @param {Number} shift The amount of stacktraces we need to remove.
  * @returns {Assert}
  * @api private
  */
-Assert.add('test', function test(passed, msg, expectation, stack) {
+Assert.add('test', function test(passed, msg, expectation, shift) {
   if (this.falsely) passed = !passed;
   if (passed) return this;
-
-  if (expectation instanceof BackTrace) {
-    stack = expectation;
-    expectation = undefined;
-  }
 
   if (expectation && expectation.indexOf('@')) {
     if (this.falsely) expectation = expectation.replace(/\@\s/g, 'not');
     else expectation = expectation.replace(/\@\s/g, '');
   }
 
-  throw new Failure(msg, {
-    stack: (stack || []).slice(4),
-    stacktrace: this.stacktrace,
-    expectation: expectation
-  });
+  if (!msg) msg = 'Unknown assertation failure occured';
+  if (expectation) msg += ', assumed ' + expectation;
+
+  var failure = new Error(msg)
+    , err = { message: failure.message };
+
+  if (this.stacktrace) err.stack = pretty(failure, shift || 2);
+  else err.stack = '';
+
+  throw err;
 });
 
 //
@@ -600,11 +579,11 @@ each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean
 
   name = type(arg);
 
-  Assert.add(name, function typecheck(msg, stack) {
+  Assert.add(name, function typecheck(msg) {
     var of = type(this.value)
       , expect = of +' to @ be an '+ name;
 
-    return this.test(of === name, msg, expect, stack || new BackTrace());
+    return this.test(of === name, msg, expect, 3);
   });
 });
 
