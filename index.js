@@ -545,14 +545,22 @@ Assert.add('test', function test(passed, msg, expectation, shift) {
     else expectation = expectation.replace(/\@\s/g, '');
   }
 
-  if (!msg) msg = 'Unknown assertation failure occured';
+  msg = msg || 'Unknown assertation failure occured';
+  shift = shift || 2;
+
   if (expectation) msg += ', assumed ' + expectation;
 
   var failure = new Error(msg)
-    , err = { message: failure.message };
+    , err = { message: failure.message, stack: '' };
 
-  if (this.stacktrace) err.stack = pretty(failure, shift || 2);
-  else err.stack = '';
+  if (this.stacktrace) err.stack = failure.stack || err.stack;
+
+  //
+  // Clean up the stack by slicing off the parts that are pointless to most
+  // people. (Like where it enters this assertion library).
+  //
+  err.stack = err.stack.split('\n').slice(shift).join('\n') || err.stack;
+  err.stack = pretty(err);
 
   throw err;
 });
