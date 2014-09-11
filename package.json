@@ -1,6 +1,6 @@
 {
   "name": "assume",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
@@ -40,6 +40,7 @@
   "dependencies": {
     "backtrace": "0.0.x",
     "deep-eql": "0.1.x",
+    "is-node": "0.0.x",
     "pathval": "0.1.x",
     "prettify-error": "0.1.x"
   },

@@ -2,6 +2,7 @@
 
 var pretty = require('prettify-error')
   , pathval = require('pathval')
+  , nodejs = require('is-node')
   , deep = require('deep-eql');
 
 var toString = Object.prototype.toString
@@ -562,7 +563,13 @@ Assert.add('test', function test(passed, msg, expectation, shift) {
   err.stack = err.stack.split('\n').slice(shift).join('\n') || err.stack;
   err.stack = pretty(err);
 
-  throw err;
+  if (nodejs) throw err;
+
+  if ('object' === typeof console && 'function' === typeof console.error) {
+    console.error(err.stack);
+  }
+
+  throw failure;
 });
 
 //
