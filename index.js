@@ -477,7 +477,7 @@ Assert.add('within, between', function within(start, finish, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property', function has(prop, msg) {
+Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown', function has(prop, msg) {
   var expect = 'object @ to have own property '+ prop;
 
   return this.test(hasOwn.call(this.value, prop), msg, expect);
@@ -491,7 +491,7 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property', function has(p
  * @returns {Assert}
  * @api public
  */
-Assert.add('match, test', function test(regex, msg) {
+Assert.add('match, matches', function test(regex, msg) {
   var expect = this.value +' to @ match '+ regex;
 
   return this.test(!!regex.exec(this.value), msg, expect);
@@ -505,7 +505,7 @@ Assert.add('match, test', function test(regex, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('equal, equals, eq', function equal(thing, msg) {
+Assert.add('equal, equals, eq, eqs', function equal(thing, msg) {
   var expect = this.value +' to @ equal (===) '+ thing;
 
   if (!this.deeply) return this.test(this.value === thing, msg, expect);
