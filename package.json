@@ -1,13 +1,14 @@
 {
   "name": "assume",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
     "browserify-tests": "browserify test/*.test.js -o test/phantom.js --debug",
     "mocha": "mocha $(find test -name '*.test.js')",
     "phantom": "mocha-phantomjs test/phantom.html",
-    "test": "npm run-script browserify-tests && npm run-script phantom"
+    "test": "npm run-script browserify-tests && npm run-script phantom",
+    "prepublish": "browserify index.js -o dist/assume.js --standalone assume"
   },
   "repository": {
     "type": "git",
