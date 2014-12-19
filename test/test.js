@@ -617,6 +617,63 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
   });
+
+  describe('.plan', function () {
+    it('plans the amount of asserts to execute', function (next) {
+      next = assume.plan(2, next);
+
+      assume('foo').equals('foo');
+      assume('bar').equals('bar');
+
+      next();
+    });
+
+    it('errors on not enough asserts', function (done) {
+      var next = assume.plan(2, function (err) {
+        assume(err.message).includes('less');
+        assume(err.message).includes('1');
+        assume(err.message).includes('2');
+
+        done();
+      });
+
+      assume('foo').equals('foo');
+      next();
+    });
+
+    it('errors on not enough asserts', function (done) {
+      var next = assume.plan(2, function (err) {
+        assume(err.message).includes('more');
+        assume(err.message).includes('1');
+        assume(err.message).includes('2');
+
+        done();
+      });
+
+      assume('foo').equals('foo');
+      assume('foo').equals('foo');
+      assume('foo').equals('foo');
+
+      next();
+    });
+
+    it('throws when not supplied with a callback', function () {
+      var next = assume.plan(2);
+
+      assume('foo').equals('foo');
+      assume('foo').equals('foo');
+      assume('foo').equals('foo');
+      assume('foo').equals('foo');
+      assume('foo').equals('foo');
+
+      try { next(); }
+      catch (err) {
+        assume(err.message).includes('more');
+        assume(err.message).includes('3');
+        assume(err.message).includes('2');
+      }
+    });
+  });
 });
 
 describe('i', function () {
