@@ -39,7 +39,6 @@
     "pre-commit": "0.0.x"
   },
   "dependencies": {
-    "backtrace": "0.0.x",
     "deep-eql": "0.1.x",
     "is-node": "0.0.x",
     "pathval": "0.1.x",
