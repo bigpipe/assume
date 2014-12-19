@@ -69,10 +69,17 @@ of chains:
 - `does`
 - `itself`
 
-So you can just write
+So you can just write:
 
 ```js
 assume(100).is.at.most(100);
+```
+
+But do note that these aliases are **optionally** so the above example can also
+be written as:
+
+```js
+assume(100).most(1000);
 ```
 
 ### Configuration
@@ -101,6 +108,80 @@ The following options can be configured:
 ### Assertion
 
 The following assertion are supported in the library:
+
+#### a, an
+ 
+Asserts if the given value is the correct type. We need to use Object.toString
+here because there are some implementation bugs the `typeof` operator:
+
+- Chrome <= 9: /Regular Expressions/ are evaluated to `function`
+
+As well as all common flaws like Arrays being seen as Objects etc. This
+eliminates all these edge cases.
+
+```js
+assume([]).is.a('array');
+```
+
+#### instanceOf, instanceof, inherits, inherit
+
+Asserts that the value is instanceof the given constructor.
+
+```js
+function Classy() {}
+
+var classes = new Classy();
+
+assume(classes).is.an.instanceOf(Classy);
+```
+
+#### include, includes, contain, contains
+
+Assert that value includes a given value. I know this sounds vague but an
+example might be more useful here. It can check this for strings, objects and
+arrays.
+
+```js
+assume({foo: 'bar'}).contains('foo');
+assume('hello world').includes('world');
+assume([1,3,4]).contains(1);
+```
+
+#### ok, okay, truthy, truely
+
+Assert that the value is truthy.
+
+```js
+assume(1).is.ok();
+assume(0).is.not.ok();
+assume(true).is.ok();
+```
+
+#### falsely, falsey
+
+Assert that the value is falsey.
+
+```js
+assume(0).is.falsely();
+assume(true).is.not.falsey();
+assume(null).is.falsely;
+```
+
+#### true
+
+Explicitly check that the value is the boolean `true`.
+
+```js
+assume(true).true();
+```
+
+#### false
+
+Explicitly check that the value is the boolean `false`.
+
+```js
+assume(true).true();
+```
 
 ### i.hope
 
