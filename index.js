@@ -520,7 +520,7 @@ Assert.add('equal, equals, eq, eqs', function equal(thing, msg) {
  *
  * @param {Mixed} thing Thing it should equal.
  * @param {String} msg Reason of failure.
- * @param {Number} slice Amount of stacktraces to slice off.
+ * @param {Number} slice Amount of stack traces to slice off.
  * @returns {Assert}
  * @api public
  */
@@ -536,11 +536,11 @@ Assert.add('eql, eqls', function eqls(thing, msg, slice) {
  * @param {Boolean} passed Didn't the test pass or fail.
  * @param {String} msg Custom message provided by users.
  * @param {String} expectation What the assertion expected.
- * @param {Number} shift The amount of stacktraces we need to remove.
+ * @param {Number} slice The amount of stack traces we need to remove.
  * @returns {Assert}
  * @api private
  */
-Assert.add('test', function test(passed, msg, expectation, shift) {
+Assert.add('test', function test(passed, msg, expectation, slice) {
   called++; // Needed for tracking the amount of executed assertions.
 
   if (this.untrue) passed = !passed;
@@ -552,7 +552,7 @@ Assert.add('test', function test(passed, msg, expectation, shift) {
   }
 
   msg = msg || 'Unknown assertation failure occured';
-  shift = shift || 2;
+  slice = slice || 2;
 
   if (expectation) msg += ', assumed ' + expectation;
 
@@ -565,7 +565,7 @@ Assert.add('test', function test(passed, msg, expectation, shift) {
   // Clean up the stack by slicing off the parts that are pointless to most
   // people. (Like where it enters this assertion library).
   //
-  err.stack = err.stack.split('\n').slice(shift).join('\n') || err.stack;
+  err.stack = err.stack.split('\n').slice(slice).join('\n') || err.stack;
   err.stack = pretty(err);
 
   if (nodejs) throw err;
