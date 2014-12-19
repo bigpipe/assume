@@ -107,7 +107,15 @@ The following options can be configured:
 
 ### Assertion
 
-The following assertion are supported in the library:
+There are various of assertions available. If you want the failed assertion to
+include a custom message or reason you can always add this as last argument of
+the assertion function.
+
+```js
+assume(true).is.false('how odd, true is not a false');
+```
+
+The following assertions are available:
 
 #### a, an
  
@@ -181,6 +189,131 @@ Explicitly check that the value is the boolean `false`.
 
 ```js
 assume(true).true();
+```
+
+#### exists, exist
+
+Check if the value not not `null`.
+
+```js
+assume('hello').exists();
+assume(undefined).exists(); // throws
+```
+
+#### length, lengthOf, size
+
+Assert if the given value has the given length. It accepts arrays, strings,
+functions, object and anything else that has a `.length` property.
+
+```js
+assume({ foo: 'bar' }).has.length(1);
+assume([1,2,3,4,5,6]).is.size(6)
+```
+
+#### empty
+
+Short hand function for `assume(val).length(0)` so it can check if objects,
+arrays, strings are empty.
+
+```js
+assume([]).empty();
+assume('').empty();
+assume({}).empty();
+
+//
+// Also works against everything that has a `.length` property
+//
+localStorage.clear();
+assume(localStorage).is.empty();
+```
+
+#### above, gt, greater, greaterTHan
+
+Assert if the value is above the given value. If you need greater or equal check
+out the `least` method. If value to assert is not a number we automatically
+extract the length out of it so you can use it check the length of arrays etc.
+
+```js
+assume(100).is.above(10);
+```
+
+#### least, gte, atleast
+
+Assert if the value is above or equal to the given value. If you just need
+greater check out the `above` method. If value to assert is not a number we
+automatically extract the length out of it so you can use it check the length of
+arrays etc.
+
+```js
+assume(100).is.least(10);
+assume(100).is.least(100);
+```
+
+#### below, lt, less, lessThan
+
+Assert if the value is less than the given value. If you need less or equal
+check out the `most` method. If value to assert is not a number we automatically
+extract the length out of it so you can use it check the length of arrays etc.
+
+```js
+assume(10).is.below(100);
+```
+
+#### most, lte, atmost
+
+Assert if the value is less or equal to the given value. If you just need less,
+check out the `less` method. If value to assert is not a number we automatically
+extract the length out of it so you can use it check the length of arrays etc.
+
+```js
+assume(10).is.most(100);
+assume(100).is.most(100);
+```
+
+#### within, between
+
+Check if the value is between or equal to a given range. If value to assert is
+not a number we automatically extract the length out of it so you can use it
+check the length of arrays etc.
+
+```js
+assume(100).is.between(90, 100);
+assume([1, 213, 13, 94, 5, 6, 7]).is.between(2, 10);
+```
+
+#### hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown
+
+Assert that the value has the specified property.
+
+```js
+assume({foo: bar}).owns('foo');
+```
+
+#### match, matches
+
+Matches the value against a given Regular Expression. If a string is given
+instead of an actual Regular Expression we automatically transform it to an `new
+RegExp`.
+
+```js
+assume('hello world').matches(/world$/);
+```
+
+#### equal, equals, eq, eqs
+
+Assert that given value is strictly (===) equal to the supplied value.
+
+```js
+assume('foo').equals('foo');
+assume(13424).equals(13424);
+```
+
+#### eql, eqls
+
+Assert that the given value deeply equals the supplied value.
+
+```js
+assume([1,2]).equals([1,2]);
 ```
 
 ### i.hope
