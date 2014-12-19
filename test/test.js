@@ -565,8 +565,56 @@ describe('Assertions', function assertions() {
       assume(str).matches('\\w+');
     });
 
-    it('accepts regexp', function () {
+    it('accepts regexp', function (next) {
       assume('cows').matches(/\w+/);
+      assume('1').matches(/\d+/);
+
+      try { assume('cows').match(/\d+/); }
+      catch (e) { next(); }
+    });
+  });
+
+  describe('#equal', function () {
+    it('is aliased as `lte`, `atmost`', function () {
+      var x = assume('aaaabe');
+
+      if (
+           x.equal !== x.equals
+        || x.equal !== x.eq
+        || x.equal !== x.eqs
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('equals', function (next) {
+      assume('foo').equals('foo');
+      assume('bar').equals('bar');
+      assume(true).equals(true);
+      assume(0).equals(0);
+
+      try { assume(true).equals(false); }
+      catch (e) {
+        try { assume('foo', 'bar'); }
+        catch (e) {
+          try { assume([]).equals([]); }
+          catch (e) { next(); }
+        }
+      }
+    });
+  });
+
+  describe('#eql', function () {
+    it('is aliased as `eqls`', function () {
+      var x = assume('foo');
+
+      if (x.eql !== x.eqls) throw new Error('Incorrectly aliased');
+    });
+
+    it('deeply equals', function (next) {
+      assume([1]).eqls([1]);
+      assume([1, [2]]).eqls([1, [2]]);
+
+      try { assume([1]).eqls([2]); }
+      catch (e) { next(); }
     });
   });
 });
