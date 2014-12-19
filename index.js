@@ -493,9 +493,11 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown', 
  * @api public
  */
 Assert.add('match, matches', function test(regex, msg) {
-  var expect = this.value +' to @ match '+ regex;
+  if ('string' === typeof regex) regex = new RegExp(regex);
 
-  return this.test(!!regex.exec(this.value), msg, expect);
+  var expect = this.value +' to @ match '+ regex.source;
+
+  return this.test(!!regex.test(this.value), msg, expect);
 });
 
 /**

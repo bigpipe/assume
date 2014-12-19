@@ -515,6 +515,60 @@ describe('Assertions', function assertions() {
       }
     });
   });
+
+  describe('#hasOwn', function () {
+    it('is aliased as `lte`, `atmost`', function () {
+      var x = assume('aaaabe');
+
+      if (
+           x.hasOwn !== x.own
+        || x.hasOwn !== x.ownProperty
+        || x.hasOwn !== x.haveOwnProperty
+        || x.hasOwn !== x.property
+        || x.hasOwn !== x.owns
+        || x.hasOwn !== x.hasown
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    if (Object.create) {
+      it('works with object.create(null)', function () {
+        var obj = Object.create(null);
+        obj.foo = 'bar';
+
+        assume(obj).hasown('foo');
+      });
+    }
+
+    it('only accepts added properties', function (next) {
+      var obj = { foo: 'br' };
+
+      assume(obj).hasown('foo');
+
+      try { assume(obj).hasown('toString()'); }
+      catch (e) {
+        try { assume(obj).hasown('unknown'); }
+        catch (e) { next(); }
+      }
+    });
+  });
+
+  describe('#match', function () {
+    it('is aliased as `matches`', function () {
+      var x = assume('aaaabe');
+
+      if (x.match !== x.matches) throw new Error('Incorrectly aliased');
+    });
+
+    it('accpets strings instead of regexps', function () {
+      var str = 'bar';
+
+      assume(str).matches('\\w+');
+    });
+
+    it('accepts regexp', function () {
+      assume('cows').matches(/\w+/);
+    });
+  });
 });
 
 describe('i', function () {
