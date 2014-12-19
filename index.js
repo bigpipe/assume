@@ -5,7 +5,8 @@ var pretty = require('prettify-error')
   , nodejs = require('is-node')
   , deep = require('deep-eql');
 
-var toString = Object.prototype.toString
+var called = 0
+  , toString = Object.prototype.toString
   , hasOwn = Object.prototype.hasOwnProperty;
 
 /**
@@ -538,6 +539,8 @@ Assert.add('eql, eqls', function eqls(thing, msg, slice) {
  * @api private
  */
 Assert.add('test', function test(passed, msg, expectation, shift) {
+  called++; // Needed for tracking the amount of executed assertions.
+
   if (this.untrue) passed = !passed;
   if (passed) return this;
 
@@ -571,6 +574,48 @@ Assert.add('test', function test(passed, msg, expectation, shift) {
 
   throw failure;
 });
+
+/**
+ * Plan for the amount of assertions that needed to run. This is great way to
+ * figure out if you have edge cases in your code which prevented an assertion or
+ * callback from running.
+ *
+ * ```js
+ * it('run a lot of assertions', function (next) {
+ *   next = assume.run(10, next);
+ * });
+ * ```
+ *
+ * @param {Number} tests The amount of assertions you expect to run.
+ * @param {Function} fn Optional completion callback which receives the error.
+ * @returns {Function} Completion callback.
+ * @api public
+ */
+Assert.plan = function plan(tests, fn) {
+  fn = fn || function next(err) {
+    if (err) throw err;
+  };
+
+  var atm = called;
+
+  return function validate(err) {
+    var ran = called - atm
+      , msg;
+
+    if (err) return fn(err);
+    if (tests === ran) return fn();
+
+    msg = [
+      'We ran',
+      ran - tests,
+      ran > tests ? 'more' : 'less',
+      'assertations than the expected',
+      tests
+    ];
+
+    fn(new Error(msg.join(' ')));
+  };
+};
 
 //
 // Create type checks for all build-in JavaScript classes.
