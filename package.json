@@ -21,16 +21,22 @@
     "url": "https://github.com/bigpipe/assume/issues"
   },
   "keywords": [
-    "expect",
     "assert",
     "assertion",
     "asserts",
     "assume",
-    "testing",
-    "test",
-    "tests",
+    "bdd",
+    "expect",
+    "expect.js",
+    "should",
+    "shouldjs",
     "spec",
-    "should"
+    "tdd",
+    "test",
+    "testing",
+    "tests",
+    "unit testing",
+    "unit"
   ],
   "author": "Arnout Kazemier",
   "license": "MIT",
