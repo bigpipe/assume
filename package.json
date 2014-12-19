@@ -7,7 +7,7 @@
     "browserify-tests": "browserify test/test.js -o test/phantom.js --debug",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --reporter spec --ui bdd test/test.js",
     "phantom": "mocha-phantomjs test/phantom.html",
-    "prepublish": "browserify index.js -o dist/assume.js --standalone assume",
+    "prepublish": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
     "node": "mocha --reporter spec --ui bdd test/test.js",
     "test": "npm run-script browserify-tests && npm run-script phantom",
     "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd test/test.js",
