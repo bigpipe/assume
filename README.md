@@ -21,6 +21,9 @@ this.
 
 ## Installation
 
+The module is written with browserify and Node.js in mind and can be installed
+using:
+
 ```
 npm install --save-dev assume
 ```
@@ -30,11 +33,73 @@ installed version to the `devDependencies` of your module. It's not advised to
 install this as an regular dependency as it was only designed to run in test and
 `throw` errors when assertions fail.
 
-If you're writing tests for browsers, you should still use `npm` to install this
-library as it's compatible with `browserify`.
-
 ## Syntax
 
+We support a lot of different syntaxes and assertion styles. The only thing we
+will no (read never) support is the `should` syntax as we will never extend
+build-in objects/primitives of JavaScript.
+
+The default syntax that we support is modeled after `expect` so you can replace
+any assertion library which implements this API by simply changing the require
+to:
+
+```js
+var expect = require('assume');
+
+expect('foo').equals('foo');
+expect('foo').is.a('string');
+```
+
+As you can see in the example above the `is` property is used to make the
+assertion more readable. We support the following aliases which allow these kind
+of chains:
+
+- `to`
+- `be`
+- `been`
+- `is`
+- `and`
+- `has`
+- `with`
+- `that`
+- `at`
+- `of`
+- `some`
+- `does`
+- `itself`
+
+So you can just write
+
+```js
+assume(100).is.at.most(100);
+```
+
+### Configuration
+
+The module can be configured globally be changing the properties on the `config`
+object:
+
+```js
+var assume = require('assume');
+assume.config.includeStack = false;
+```
+
+Or locally for each assertions by supplying the `assume` function with an
+optional configuration object:
+
+```js
+assume('foo', { includeStack: false }).is.a('buffer');
+```
+
+The following options can be configured:
+
+- **`includeStack`** Should we output a stack trace. Defaults to `true`.
+- **`showDIff`** Show difference between the given and expected values. Defaults
+  to `true`.
+
+### Assertion
+
+The following assertion are supported in the library:
 
 ### i.hope
 
