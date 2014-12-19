@@ -600,6 +600,20 @@ describe('Assertions', function assertions() {
         }
       }
     });
+
+    it('supports .deep', function (next) {
+      assume([1]).deep.equals([1]);
+
+      try { assume([1]).equals([1]); }
+      catch (e) { next(); }
+    });
+
+    it('supports .not', function (next) {
+      assume('foo').does.not.equal('bar');
+
+      try { assume('foo').does.not.equal('foo'); }
+      catch (e) { next(); }
+    });
   });
 
   describe('#eql', function () {
@@ -657,6 +671,16 @@ describe('Assertions', function assertions() {
       next();
     });
 
+    it('still allows error in the callback', function (done) {
+      var next = assume.plan(2, function (err) {
+        assume(err.message).includes('shit');
+
+        done();
+      });
+
+      next(new Error('shit'));
+    });
+
     it('throws when not supplied with a callback', function () {
       var next = assume.plan(2);
 
@@ -672,6 +696,29 @@ describe('Assertions', function assertions() {
         assume(err.message).includes('3');
         assume(err.message).includes('2');
       }
+    });
+  });
+
+  describe('type checks', function () {
+    it('.string', function (next) {
+      assume('function').is.string();
+
+      try { assume(true).is.string(); }
+      catch (e) { next(); }
+    });
+
+    it('.array', function (next) {
+      assume(['function']).is.array();
+
+      try { assume(true).is.array(); }
+      catch (e) { next(); }
+    });
+
+    it('is .arguments', function (next) {
+      assume(arguments).is.arguments();
+
+      try { assume(true).is.arguments(); }
+      catch (e) { next(); }
     });
   });
 });
