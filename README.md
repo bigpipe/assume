@@ -1,7 +1,8 @@
 # Assume
 
-[![Version npm][version]](http://browsenpm.org/package/assume)[![Build Status][build]](https://travis-ci.org/bigpipe/assume)[![Dependencies][david]](https://david-dm.org/bigpipe/assume)[![Coverage Status][cover]](https://coveralls.io/r/bigpipe/assume?branch=master)
+[![From bigpipe.io][from]](http://bigpipe.io)[![Version npm][version]](http://browsenpm.org/package/assume)[![Build Status][build]](https://travis-ci.org/bigpipe/assume)[![Dependencies][david]](https://david-dm.org/bigpipe/assume)[![Coverage Status][cover]](https://coveralls.io/r/bigpipe/assume?branch=master)
 
+[from]: https://img.shields.io/badge/from-bigpipe.io-9d8dff.svg?style=flat-square
 [version]: http://img.shields.io/npm/v/assume.svg?style=flat-square
 [build]: http://img.shields.io/travis/bigpipe/assume/master.svg?style=flat-square
 [david]: https://img.shields.io/david/bigpipe/assume.svg?style=flat-square
