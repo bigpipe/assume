@@ -43,10 +43,7 @@ describe('Assertions', function assertions() {
       assume(new Error('foo')).to.be.a('error');
 
       try { assume('foo').to.be.a('error'); }
-      catch (e) {
-        assume(e).to.be.a('error');
-        next();
-      }
+      catch (e) { next(); }
     });
 
     if (global.RegExp) it('classifies regexps', function (next) {
@@ -76,9 +73,29 @@ describe('Assertions', function assertions() {
       var x = assume('foo');
 
       if (x.a !== x.an) throw new Error('Incorrectly aliased');
+    });
+  });
 
-      x.to.be.an('string');
-      x.to.be.a('string');
+  describe('#instanceof', function () {
+    function Foo() {}
+    function Bar() {}
+
+    it('is aliased as `instanceOf`, `inherit`, `inherits`', function () {
+      var foo = new Foo()
+        , x = assume(foo);
+
+      if (
+           x.instanceOf !== x.instanceof
+        || x.inherit !== x.instanceof
+        || x.inherits !== x.instanceof
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('correctly checks the instance', function (next) {
+      assume(new Foo).is.instanceOf(Foo);
+
+      try { assume(new Foo).is.instanceOf(Bar); }
+      catch (e) { next(); }
     });
   });
 });
