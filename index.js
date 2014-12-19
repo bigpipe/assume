@@ -99,7 +99,7 @@ function each(arr, fn) {
  *
  * Flags:
  *
- * - **falsely**: Assert for a false instead of true.
+ * - **untrue**: Assert for a false instead of true.
  * - **deeply**:  Ensure a deep match of the given object.
  * - **stacktrace**: Include stacktrace in the assertion.
  * - **diff**: Attempt to show the difference in object/values so we know why
@@ -121,7 +121,7 @@ function Assert(value, flags) {
   // These flags are by the alias function so we can generate .not and .deep
   // properties which are basically new Assert instances with these flags set.
   //
-  this.falsely = 'falsely' in flags ? flags.falsely : false;
+  this.untrue = 'untrue' in flags ? flags.untrue : false;
   this.deeply = 'deeply' in flags ? flags.deeply : false;
   this.value = value;
 
@@ -209,7 +209,7 @@ Assert.alias = function alias(value, assert) {
  * @public
  */
 Assert.aliases = {
-  falsely: 'doesnt, not, dont',
+  untrue: 'doesnt, not, dont',
   deeply: 'deep'
 };
 
@@ -240,7 +240,7 @@ Assert.add = Assert.assign(Assert.prototype);
  * @api public
  */
 Assert.add('a, an', function typecheck(of, msg) {
-  of = (of || '').toLowerCase();
+  of = of.toString().toLowerCase();
 
   var value = type(this.value)
     , expect = value +' to @ be a '+ of;
@@ -308,10 +308,23 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('ok, truthy, truly', function ok(msg) {
+Assert.add('ok, okay, truthy, truly', function ok(msg) {
   var expect = '"'+ this.value +'" to @ be truthy';
 
   return this.test(Boolean(this.value), msg, expect);
+});
+
+/**
+ * Assert that the value is falsey.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('falsely, falsey', function nope(msg) {
+  var expect = '"'+ this.value +'" to @ be falsely';
+
+  return this.test(Boolean(this.value) === false, msg, expect);
 });
 
 /**
@@ -338,19 +351,6 @@ Assert.add('false', function nope(msg) {
   var expect = this.value +' to @ equal (===) false';
 
   return this.test(this.value === false, msg, expect);
-});
-
-/**
- * Assert that the value is falsey.
- *
- * @param {String} msg Reason of failure.
- * @returns {Assert}
- * @api public
- */
-Assert.add('falsely, falsey', function nope(msg) {
-  var expect = '"'+ this.value +'" to @ be falsely';
-
-  return this.test(Boolean(this.value) === false, msg, expect);
 });
 
 /**
@@ -416,7 +416,7 @@ Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('least, gte', function least(value, msg) {
+Assert.add('least, gte, atleast', function least(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be greater or equal to '+ value;
 
@@ -446,7 +446,7 @@ Assert.add('below, lt, less, lessThan', function below(value, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('most, lte', function most(value, msg) {
+Assert.add('most, lte, atmost', function most(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
     , expect = amount +' to @ be less or equal to '+ value;
 
@@ -538,11 +538,11 @@ Assert.add('eql, eqls', function eqls(thing, msg, slice) {
  * @api private
  */
 Assert.add('test', function test(passed, msg, expectation, shift) {
-  if (this.falsely) passed = !passed;
+  if (this.untrue) passed = !passed;
   if (passed) return this;
 
   if (expectation && expectation.indexOf('@')) {
-    if (this.falsely) expectation = expectation.replace(/\@\s/g, 'not');
+    if (this.untrue) expectation = expectation.replace(/\@\s/g, 'not');
     else expectation = expectation.replace(/\@\s/g, '');
   }
 
