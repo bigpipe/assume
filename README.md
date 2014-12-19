@@ -1,5 +1,12 @@
 # Assume
 
+[![Version npm][version]](http://browsenpm.org/package/assume)[![Build Status][build]](https://travis-ci.org/bigpipe/assume)[![Dependencies][david]](https://david-dm.org/bigpipe/assume)[![Coverage Status][cover]](https://coveralls.io/r/bigpipe/assume?branch=master)
+
+[version]: http://img.shields.io/npm/v/assume.svg?style=flat-square
+[build]: http://img.shields.io/travis/bigpipe/assume/master.svg?style=flat-square
+[david]: https://img.shields.io/david/bigpipe/assume.svg?style=flat-square
+[cover]: http://img.shields.io/coveralls/bigpipe/assume/master.svg?style=flat-square
+
 Assume is an `expect` inspired assertion library who's sole purpose is to create
 a working and human readable assert library for browsers and node. The library
 is designed to work with different assertion styles.
