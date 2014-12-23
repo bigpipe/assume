@@ -1,6 +1,7 @@
 'use strict';
 
 var pretty = require('prettify-error')
+  , displayName = require('fn.name')
   , pathval = require('pathval')
   , nodejs = require('is-node')
   , deep = require('deep-eql');
@@ -18,46 +19,6 @@ var called = 0
  */
 function type(of) {
   return toString.call(of).slice(8, -1).toLowerCase();
-}
-
-/**
- * Detect the display name of a given function.
- *
- * @param {Mixed} fn Function of class who's name is unknown
- * @returns {String}
- * @api private
- */
-function displayName(fn) {
-  if (!fn) return 'undefined';
-
-  //
-  // WebKit and Safari expose a displayName property which contains the name of
-  // the set function.
-  //
-  if (fn.displayName) return fn.displayName;
-
-  //
-  // Check to see if the constructor has a name
-  //
-  if (
-       'object' === typeof fn
-    && fn.constructor
-    && 'string' === typeof fn.constructor.name
-  ) return fn.constructor.name;
-
-  //
-  // Not a constructor, but we do have a name prop, use that instead.
-  //
-  if ('string' === fn.name) return fn.name;
-
-  //
-  // toString the given function and attempt to parse it out of it, or determine
-  // the class.
-  //
-  var named = fn.toString();
-  return 'function' === type(fn)
-    ? named.substring(named.indexOf('(') + 1, named.indexOf(')'))
-    : toString.call(fn).slice(8, -1);
 }
 
 /**
