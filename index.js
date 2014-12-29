@@ -1,6 +1,7 @@
 'use strict';
 
 var pretty = require('prettify-error')
+  , string = require('object-inspect')
   , displayName = require('fn.name')
   , pathval = require('pathval')
   , nodejs = require('is-node')
@@ -233,9 +234,9 @@ Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor,
  * @api public
  */
 Assert.add('include, includes, contain, contains', function contain(val, msg) {
-  var of = type(this.value)
-    , includes = false
-    , expect = JSON.stringify(this.value) +' to @ include '+ val;
+  var includes = false
+    , of = type(this.value)
+    , expect = '`'+ string(this.value) +'` to @ include '+ val;
 
   switch (of) {
     case 'array':
@@ -271,7 +272,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
  * @api public
  */
 Assert.add('ok, okay, truthy, truly', function ok(msg) {
-  var expect = '"'+ this.value +'" to @ be truthy';
+  var expect = '`'+ string(this.value) +'` to @ be truthy';
 
   return this.test(Boolean(this.value), msg, expect);
 });
@@ -284,7 +285,7 @@ Assert.add('ok, okay, truthy, truly', function ok(msg) {
  * @api public
  */
 Assert.add('falsely, falsey', function nope(msg) {
-  var expect = '"'+ this.value +'" to @ be falsely';
+  var expect = '`'+ string(this.value) +'` to @ be falsely';
 
   return this.test(Boolean(this.value) === false, msg, expect);
 });
@@ -297,7 +298,7 @@ Assert.add('falsely, falsey', function nope(msg) {
  * @api public
  */
 Assert.add('true', function ok(msg) {
-  var expect = this.value +' to @ equal (===) true';
+  var expect = '`'+ string(this.value) +'` to @ equal (===) true';
 
   return this.test(this.value === true, msg, expect);
 });
@@ -310,7 +311,7 @@ Assert.add('true', function ok(msg) {
  * @api public
  */
 Assert.add('false', function nope(msg) {
-  var expect = this.value +' to @ equal (===) false';
+  var expect = '`'+ string(this.value) +'` to @ equal (===) false';
 
   return this.test(this.value === false, msg, expect);
 });
@@ -323,7 +324,7 @@ Assert.add('false', function nope(msg) {
  * @api public
  */
 Assert.add('exists, exist', function exists(msg) {
-  var expect = '"'+ this.value +'" to @ exist';
+  var expect = '`'+ string(this.value) +'` to @ exist';
 
   return this.test(this.value != null, msg, expect);
 });
@@ -337,7 +338,7 @@ Assert.add('exists, exist', function exists(msg) {
  * @api public
  */
 Assert.add('length, lengthOf, size', function length(value, msg) {
-  var expect = type(this.value) +' to @ have a length of '+ value;
+  var expect = '`'+ string(this.value) +'` to @ have a length of '+ value;
 
   return this.test(size(this.value) === +value, msg, expect);
 });
@@ -350,7 +351,7 @@ Assert.add('length, lengthOf, size', function length(value, msg) {
  * @api public
  */
 Assert.add('empty', function empty(msg) {
-  var expect = type(this.value) +' to @ be empty';
+  var expect = '`'+ string(this.value) +'` to @ be empty';
 
   return this.test(size(this.value) === 0, msg, expect);
 });
@@ -456,7 +457,7 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown', 
 Assert.add('match, matches', function test(regex, msg) {
   if ('string' === typeof regex) regex = new RegExp(regex);
 
-  var expect = this.value +' to @ match '+ regex.source;
+  var expect = '`'+ string(this.value) +'` to @ match '+ string(regex);
 
   return this.test(!!regex.test(this.value), msg, expect);
 });
@@ -470,7 +471,7 @@ Assert.add('match, matches', function test(regex, msg) {
  * @api public
  */
 Assert.add('equal, equals, eq, eqs', function equal(thing, msg) {
-  var expect = this.value +' to @ equal (===) '+ thing;
+  var expect = '`'+ string(this.value) +'` to @ equal (===) '+ string(thing);
 
   if (!this.deeply) return this.test(this.value === thing, msg, expect);
   return this.eql(thing, msg, 3);
@@ -486,7 +487,7 @@ Assert.add('equal, equals, eq, eqs', function equal(thing, msg) {
  * @api public
  */
 Assert.add('eql, eqls', function eqls(thing, msg, slice) {
-  var expect = this.value +' to deeply equal '+ thing;
+  var expect = '`'+ string(this.value) +'` to deeply equal '+ thing;
 
   return this.test(deep(this.value, thing), msg, expect, slice);
 });

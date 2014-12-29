@@ -52,6 +52,7 @@
     "deep-eql": "0.1.x",
     "fn.name": "1.0.x",
     "is-node": "0.0.x",
+    "object-inspect": "1.0.x",
     "pathval": "0.1.x",
     "prettify-error": "0.1.x"
   },
