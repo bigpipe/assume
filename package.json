@@ -41,9 +41,9 @@
   "author": "Arnout Kazemier",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "7.0.x",
+    "browserify": "8.0.x",
     "istanbul": "0.3.x",
-    "mocha": "2.0.x",
+    "mocha": "2.1.x",
     "mocha-phantomjs": "3.5.x",
     "phantomjs": "1.9.x",
     "pre-commit": "0.0.x"
