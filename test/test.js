@@ -64,6 +64,13 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
+    if (global.Buffer) it('classifies buffers', function (next) {
+      assume(new Buffer(0)).to.be.a('buffer');
+
+      try { assume({}).to.be.a('buffer'); }
+      catch (e) { next(); }
+    });
+
     if (global.Float32Array) it('classifies float32arrays');
     if (global.Float64Array) it('classifies float64arrays');
     if (global.int16Array) it('classifies int16arrays');

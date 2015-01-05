@@ -19,6 +19,7 @@ var called = 0
  * @api private
  */
 function type(of) {
+  if (Buffer.isBuffer(of)) return 'buffer';
   return toString.call(of).slice(8, -1).toLowerCase();
 }
 
