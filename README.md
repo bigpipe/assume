@@ -56,10 +56,13 @@ install this as an regular dependency as it was only designed to run in test and
   - [within, between](#within-between)
   - [hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown](#hasown-own-ownproperty-haveownproperty-property-owns-hasown)
   - [match, matches](#match-matches)
-  - [equal, equals, eq, eqs](#equal-equals-eq-eqs)
+  - [equal, equals, eq, eqs, exactly](#equal-equals-eq-eqs-exactly)
   - [eql, eqls](#eql-eqls)
   - [either](#either)
   - [throw, throws, fail, fails](#throw-throws-fail-fails)
+  - [start, starts, startsWith, startWith](#start-stats-startswith-startwith)
+  - [end, ends, endsWith, endWith](#end-ends-endswith-endwith)
+  - [closeTo, close, approximately, near](#closeto-close-approximately-near)
 - [i.hope](#ihope)
 
 ## Syntax
@@ -96,6 +99,7 @@ of chains:
 - `some`
 - `does`
 - `itself`
+- `which`
 
 So you can just write:
 
@@ -327,7 +331,7 @@ RegExp`.
 assume('hello world').matches(/world$/);
 ```
 
-#### equal, equals, eq, eqs
+#### equal, equals, eq, eqs, exactly
 
 Assert that given value is strictly (===) equal to the supplied value.
 
@@ -366,6 +370,30 @@ assume(arrow).throws(/failed this city/);
 assume(arrow).throws('failed this city');
 assume(arrow).does.not.throw('your mom');
 assume(function(){}).does.not.throw();
+```
+
+#### start, starts, startsWith, startWith
+
+Assert that the value starts with the given string.
+
+```js
+assume('foobar').startWith('foo');
+```
+
+#### end, ends, endsWith, endWith
+
+Assert that the value ends with the given string.
+
+```js
+assume('foor bar, banana').endsWith('ana');
+```
+
+#### closeTo, close, approximately, near
+
+Assert a float point number is near a given value within a delta margin.
+
+```js
+assume(1.5).is.approximately(1.4, 0.2);
 ```
 
 ### i.hope
