@@ -707,6 +707,34 @@ describe('Assertions', function assertions() {
       try { assume(fail).throws(ReferenceError); }
       catch (e) { next(); }
     });
+
+    it('can throw non errors', function () {
+      assume(function () { throw true; }).throws(true);
+    });
+  });
+
+  describe('approximately', function () {
+    it('is aliased as `throw`, `fail`, `fails`', function () {
+      var x = assume('foo');
+
+      if (
+           x.approximately !== x.near
+        || x.approximately !== x.close
+        || x.approximately !== x.closeTo
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('should be approximately', function (next) {
+      assume(1.5).is.approximately(1.4, 0.2);
+      assume(1.5).is.approximately(1.5, 10E-10);
+      assume(1.5).is.not.approximately(1.4, 1E-2);
+
+      try { assume(99.99).is.not.approximately(100, 0.1); }
+      catch (e) {
+        try { assume(99.99).is.approximately(105, 0.1); }
+        catch (e) { next(); }
+      }
+    });
   });
 
   describe('.start', function () {
