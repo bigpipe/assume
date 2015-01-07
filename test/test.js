@@ -639,6 +639,22 @@ describe('Assertions', function assertions() {
     });
   });
 
+  describe('#either', function () {
+    it('equals one of the given values', function (next) {
+      assume('bar').is.either('foo', 'bar');
+
+      try { assume('bar').is.either(1, 2, new Date(), []); }
+      catch (e) { next(); }
+    });
+
+    it('deeply equals one of the given values', function (next) {
+      assume({foo: 'bar'}).is.deep.either({ bar: 'foo' }, { foo: 'bar' });
+
+      try { assume({foo: 'bar'}).is.deep.either({ bar: 'foo' }, { foo: 'bar', food: 'bar' }); }
+      catch (e) { next(); }
+    });
+  });
+
   describe('.plan', function () {
     it('plans the amount of asserts to execute', function (next) {
       next = assume.plan(2, next);
