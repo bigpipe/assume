@@ -34,6 +34,33 @@ installed version to the `devDependencies` of your module. It's not advised to
 install this as an regular dependency as it was only designed to run in test and
 `throw` errors when assertions fail.
 
+## Table of Contents
+
+- [Syntax](#syntax)
+- [Configuration](#configuration)
+- [Assertion](#assertion)
+  - [a, an](#a-an)
+  - [instanceOf, instanceof, inherits, inherit](#instanceof-instanceof-inherits-inherit)
+  - [include, includes, contain, contains](#include-includes-contain-contains)
+  - [ok, okay, truthy, truely](#ok-okay-truthy-truely)
+  - [falsely, falsey](#falsely-falsey)
+  - [true](#true)
+  - [false](#false)
+  - [exists, exist](#exists-exist)
+  - [length, lengthOf, size](#length-lengthof-size)
+  - [empty](#empty)
+  - [above, gt, greater, greaterThan](#above-gt-greater-greaterthan)
+  - [least, gte, atleast](#least-gte-atleast)
+  - [below, lt, less, lessThan](#below-lt-less-lessthan)
+  - [most, lte, atmost](#most-lte-atmost)
+  - [within, between](#within-between)
+  - [hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown](#hasown-own-ownproperty-haveownproperty-property-owns-hasown)
+  - [match, matches](#match-matches)
+  - [equal, equals, eq, eqs](#equal-equals-eq-eqs)
+  - [eql, eqls](#eql-eqls)
+  - [either](#either)
+- [i.hope](#ihope)
+
 ## Syntax
 
 We support a lot of different syntaxes and assertion styles. The only thing we
@@ -227,7 +254,7 @@ localStorage.clear();
 assume(localStorage).is.empty();
 ```
 
-#### above, gt, greater, greaterTHan
+#### above, gt, greater, greaterThan
 
 Assert if the value is above the given value. If you need greater or equal check
 out the `least` method. If value to assert is not a number we automatically
