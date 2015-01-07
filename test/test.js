@@ -71,8 +71,20 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.Float32Array) it('classifies float32arrays');
-    if (global.Float64Array) it('classifies float64arrays');
+    if (global.Float32Array) it('classifies float32arrays', function (next) {
+      assume(new Float32Array(2)).to.be.a('float32array');
+
+      try { assume([]).to.be.a('float32array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Float64Array) it('classifies float64arrays', function (next) {
+      assume(new Float64Array(2)).to.be.a('float64array');
+
+      try { assume([]).to.be.a('float64array'); }
+      catch (e) { next(); }
+    });
+
     if (global.int16Array) it('classifies int16arrays');
     if (global.int32Array) it('classifies int32arrays');
 
@@ -693,6 +705,46 @@ describe('Assertions', function assertions() {
       assume(fail).throws(Error);
 
       try { assume(fail).throws(ReferenceError); }
+      catch (e) { next(); }
+    });
+  });
+
+  describe('.start', function () {
+    it('is aliased as `starts`, `startsWith`, `startWith`', function () {
+      var x = assume('foo');
+
+      if (
+           x.start !== x.starts
+        || x.startWith !== x.start
+        || x.startsWith !== x.start
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('starts with str', function (next) {
+      assume('foobar').startsWith('foo');
+      assume('hello multi string hello').starts('hello');
+
+      try { assume('foobar').startsWith('bar'); }
+      catch (e) { next(); }
+    });
+  });
+
+  describe('.end', function () {
+    it('is aliased as `ends`, `endsWith`, `endWith`', function () {
+      var x = assume('foo');
+
+      if (
+           x.end !== x.ends
+        || x.endsWith !== x.end
+        || x.endWith !== x.end
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('ends with str', function (next) {
+      assume('foobar').endsWith('bar');
+      assume('hello multi string hellos').endsWith('hellos');
+
+      try { assume('foobar').endsWith('foo'); }
       catch (e) { next(); }
     });
   });
