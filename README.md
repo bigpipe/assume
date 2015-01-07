@@ -316,6 +316,16 @@ Assert that the given value deeply equals the supplied value.
 assume([1,2]).equals([1,2]);
 ```
 
+#### either
+
+Assert that the value is either one of the given values. It can be prefixed with
+`.deep` for deep assertions.
+
+```js
+assume('foo').is.either('bar', 'banana', 'foo');
+assume({ foo: 'bar' }).is.either('bar', 'banana', { foo: 'bar' });
+```
+
 ### i.hope
 
 The asserts we write are assumptions that we receive a given value. While you're
