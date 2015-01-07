@@ -89,7 +89,7 @@ function Assert(value, flags) {
   this.deeply = 'deeply' in flags ? flags.deeply : false;
   this.value = value;
 
-  Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does, itself');
+  Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does, itself, which');
   Assert.alias(value, this);
 }
 
@@ -388,6 +388,52 @@ Assert.add('least, gte, atleast', function least(value, msg) {
 });
 
 /**
+ * Assert that the value starts with the given value.
+ *
+ * @param {String} value String it should start with.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('start, starts, startsWith, startWith', function start(value, msg) {
+  var expect = string(this.value) +'to @ start with '+ string(value);
+
+  return this.test(0 === this.value.indexOf(value), msg, expect);
+});
+
+/**
+ * Assert that the value ends with the given value.
+ *
+ * @param {String} value String it should start with.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('end, ends, endsWith, endWith', function end(value, msg) {
+  var index = this.value.indexOf(value, this.value.length - value.length)
+    , expect = string(this.value) +' to @ end with '+ string(value);
+
+  return this.test(index >= 0, msg, expect);
+});
+
+/**
+ * Assert a floating point number is near the give value within the delta
+ * margin.
+ *
+ * @param {Number} value The specified value.
+ * @param {Number} delta Radius.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('closeTo, close, approximately, near', function close(value, delta, msg) {
+  var expect = string(this.value) +'to @ be close to '
+               + string(value) +' ±'+ string(delta);
+
+  return this.test(Math.abs(this.value - value) <= delta, msg, expect);
+});
+
+/**
  * Assert that the value is below the specified value.
  *
  * @param {Number} value The specified value.
@@ -471,7 +517,7 @@ Assert.add('match, matches', function test(regex, msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('equal, equals, eq, eqs', function equal(thing, msg) {
+Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
   var expect = '`'+ string(this.value) +'` to @ equal (===) '+ string(thing);
 
   if (!this.deeply) return this.test(this.value === thing, msg, expect);
