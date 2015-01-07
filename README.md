@@ -59,6 +59,7 @@ install this as an regular dependency as it was only designed to run in test and
   - [equal, equals, eq, eqs](#equal-equals-eq-eqs)
   - [eql, eqls](#eql-eqls)
   - [either](#either)
+  - [throw, throws, fail, fails](#throw-throws-fail-fails)
 - [i.hope](#ihope)
 
 ## Syntax
@@ -351,6 +352,20 @@ Assert that the value is either one of the given values. It can be prefixed with
 ```js
 assume('foo').is.either('bar', 'banana', 'foo');
 assume({ foo: 'bar' }).is.either('bar', 'banana', { foo: 'bar' });
+```
+
+#### throw, throws, fail, fails
+
+Assert that the given function throws an error. The error can match a string,
+regexp or function instance.
+
+```js
+function arrow() { throw new Error('you have failed this city'); }
+
+assume(arrow).throws(/failed this city/);
+assume(arrow).throws('failed this city');
+assume(arrow).does.not.throw('your mom');
+assume(function(){}).does.not.throw();
 ```
 
 ### i.hope

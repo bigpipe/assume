@@ -519,6 +519,47 @@ Assert.add('either', function either() {
 });
 
 /**
+ * Assert if the given function throws.
+ *
+ * @param {Mixed} thing Thing it should equal.
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
+  try { this.value(); }
+  catch (e) {
+    var message = 'object' === typeof e ? e.message : e;
+
+    switch (type(thing)) {
+      case 'string': return this.clone(message).includes(thing, msg);
+      case 'regexp': return this.clone(message).matches(thing, msg);
+      case 'function': return this.clone(e).instanceOf(thing, msg);
+      default: return this.clone(e).equals(thing);
+    }
+  }
+
+  return this.test(false, msg, 'expected function to @ throw');
+});
+
+/**
+ * Create a clone of the current assertion instance which has the same
+ * configuration but a different value.
+ *
+ * @param {Mixed} value The new value
+ * @returns {Assert}
+ * @api private
+ */
+Assert.add('clone', function clone(value) {
+  return new Assert(value || this.value, {
+    stacktrace: this.stacktrace,
+    untrue: this.untrue,
+    deeply: this.deeply,
+    diff: this.diff
+  });
+});
+
+/**
  * Validate the assertion.
  *
  * @param {Boolean} passed Didn't the test pass or fail.

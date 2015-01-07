@@ -655,6 +655,48 @@ describe('Assertions', function assertions() {
     });
   });
 
+  describe('#throws', function () {
+    function fail() { throw new Error('Oi, cow face'); }
+    function pass() { }
+
+    it('is aliased as `throw`, `fail`, `fails`', function () {
+      var x = assume('foo');
+
+      if (
+           x.throws !== x.throw
+        || x.throws !== x.fails
+        || x.throws !== x.fail
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('captures the thrown error', function (next) {
+      assume(fail).throws('cow face');
+      assume(pass).does.not.throws();
+
+      try { assume(fail).throws('your mom'); }
+      catch (e) { next(); }
+    });
+
+    it('executes non throwing functions', function (next) {
+      assume(fail).does.not.throw('hi');
+      assume(next).does.not.throw('hi');
+    });
+
+    it('can match using regexp', function (next) {
+      assume(fail).throws(/oi/i);
+
+      try { assume(fail).throws(/waffles/); }
+      catch (e) { next(); }
+    });
+
+    it('can match instances', function (next) {
+      assume(fail).throws(Error);
+
+      try { assume(fail).throws(ReferenceError); }
+      catch (e) { next(); }
+    });
+  });
+
   describe('.plan', function () {
     it('plans the amount of asserts to execute', function (next) {
       next = assume.plan(2, next);
