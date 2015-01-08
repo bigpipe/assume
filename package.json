@@ -58,7 +58,7 @@
   },
   "testling": {
     "harness": "mocha-bdd",
-    "files": "test/*.js",
+    "files": "test/test.js",
     "browsers": [
       "ie/6..latest",
       "chrome/latest",
