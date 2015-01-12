@@ -34,6 +34,8 @@ function size(collection) {
   var x, i = 0;
 
   if ('object' === type(collection)) {
+    if ('number' === type(collection.length)) return collection.length;
+
     for (x in collection) {
       if (hasOwn.call(collection, x)) i++;
     }

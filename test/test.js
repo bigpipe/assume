@@ -311,6 +311,19 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
+    it('prefers a `.length` key over the size of an object', function (next) {
+      function Foo() {
+        this.length = 1;
+        this.bar = 'hello';
+      }
+
+      var foo = new Foo();
+      assume(foo).length(1);
+
+      try { assume(foo).length(2); }
+      catch (e) { next(); }
+    });
+
     it('checks the amount of arguments in a function', function (next) {
       function test(one, two, three) {}
 
