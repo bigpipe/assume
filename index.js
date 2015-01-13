@@ -20,6 +20,8 @@ var called = 0
  */
 function type(of) {
   if (Buffer.isBuffer(of)) return 'buffer';
+  if (of !== of) return 'nan';
+
   return toString.call(of).slice(8, -1).toLowerCase();
 }
 
@@ -54,9 +56,15 @@ function size(collection) {
  * @param {Function} fn Callback for each item.
  * @private
  */
-function each(arr, fn) {
-  for (var i = 0, length = arr.length; i < length; i++) {
-    fn(arr[i], i, arr);
+function each(what, fn) {
+  if ('array' === type(what)) {
+    for (var i = 0, length = what.length; i < length; i++) {
+      if (false === fn(what[i], i, what)) break;
+    }
+  } else {
+    for (var key in what) {
+      if (false === fn(what[key], key, what)) break;
+    }
   }
 }
 
@@ -694,6 +702,27 @@ Assert.plan = function plan(tests, fn) {
 
     fn(new Error(msg.join(' ')));
   };
+};
+
+/**
+ * Load/execute a new plugin.
+ *
+ * @param {Function} plugin Plugin to be executed.
+ * @returns {Function} Assert, for chaining purposes.
+ * @api public
+ */
+Assert.use = function use(plugin) {
+  plugin(this, {
+    name: displayName,    // Extract the name of a function.
+    get: pathval.get,     // Get a value from an object.
+    string: string,       // Transform thing to a string.
+    deep: deep,           // Deep assertion.
+    type: type,           // Get class information.
+    size: size,           // Get the size of an object.
+    each: each            // Iterate over arrays.
+  });
+
+  return Assert;
 };
 
 //

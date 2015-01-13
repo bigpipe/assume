@@ -8,6 +8,13 @@ describe('Assertions', function assertions() {
   var assume = require('../');
 
   describe('#a', function () {
+    it('classifies NaN', function (next) {
+      assume(NaN).to.be.a('nan');
+
+      try { assume('foo').to.be.a('nan'); }
+      catch (e) { next(); }
+    });
+
     if (global.String) it('classifies strings', function (next) {
       assume(String('foo')).to.be.a('string');
       assume('string').to.be.a('string');
@@ -877,6 +884,36 @@ describe('Assertions', function assertions() {
 
       try { assume(true).is.arguments(); }
       catch (e) { next(); }
+    });
+  });
+
+  describe('.use', function () {
+    it('has a `use` method', function () {
+      assume(assume.use).is.a('function');
+    });
+
+    it('executes the supplied function', function (next) {
+      assume.use(function plugin(ass, helpers) {
+        assume(ass).equals(assume);
+
+        next();
+      });
+    });
+
+    it('exposes helper functions', function (next) {
+      assume.use(function plugin(ass, helpers) {
+        assume(helpers).is.a('object');
+
+        assume(helpers.string).is.a('function');
+        assume(helpers.deep).is.a('function');
+        assume(helpers.each).is.a('function');
+        assume(helpers.name).is.a('function');
+        assume(helpers.size).is.a('function');
+        assume(helpers.type).is.a('function');
+        assume(helpers.get).is.a('function');
+
+        next();
+      });
     });
   });
 });
