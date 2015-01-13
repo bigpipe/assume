@@ -3,3 +3,4 @@ npm-debug.log
 test/phantom.js
 dist
 coverage
+.tern-port
