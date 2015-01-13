@@ -16,7 +16,7 @@ I've been trying out a lot of libraries over the last couple of years and none
 of the assertion libraries that I found "tickled my fancy". They either only
 worked in node or had really bad browser support. I wanted something that I can
 use starting from Internet Explorer 5 to the latest version while maintaining
-the `expect` like API that we all know an love. Writing tests should be dead
+the `expect` like API that we all know and love. Writing tests should be dead
 simple and not cause any annoyances. This library attempts to achieve all of
 this.
 
@@ -34,8 +34,13 @@ installed version to the `devDependencies` of your module. It's not advised to
 install this as an regular dependency as it was only designed to run in test and
 `throw` errors when assertions fail.
 
+A compiled version which does not require browserify is also added in npm
+releases. The compiled file can be found in `dist/assume.js` in the installed
+node module.
+
 ## Table of Contents
 
+- [Installation](#installation)
 - [Syntax](#syntax)
 - [Configuration](#configuration)
 - [Assertion](#assertion)
@@ -64,6 +69,13 @@ install this as an regular dependency as it was only designed to run in test and
   - [end, ends, endsWith, endWith](#end-ends-endswith-endwith)
   - [closeTo, close, approximately, near](#closeto-close-approximately-near)
 - [i.hope](#ihope)
+- [Planning](#plan)
+- [Plugins](#plugins)
+  - [use](#use)
+  - [add](#add)
+  - [test](#test)
+  - [assign](#assign)
+  - [clone](#clone)
 
 ## Syntax
 
@@ -139,15 +151,30 @@ The following options can be configured:
 
 ### Assertion
 
-There are various of assertions available. If you want the failed assertion to
-include a custom message or reason you can always add this as last argument of
-the assertion function.
+There are various of assertions available in assume. If you want the failed
+assertion to include a custom message or reason you can **always** add this as last
+argument of the assertion function.
 
 ```js
 assume(true).is.false('how odd, true is not a false');
 ```
 
-The following assertions are available:
+The behaviours of the assertions can be chained using special "flags" or
+"prefixes". We currently support the following prefixes.
+
+- `.not`, `.doesnt`, `.dont` Instead of assuming that your assertions assert to
+  `true` they will now assert for `false`.
+- `.deep` Instructs the assertions to do a **deep** equal, so it checks if the
+  contents match instead of an `object` it self matches.
+
+For example:
+
+```js
+assume(false).is.not.true();
+assume({foo:'bar'}).deep.equals({foo:'bar'});
+```
+
+Let's take a closer look to all assertions that we're supporting:
 
 #### a, an
  
@@ -409,6 +436,234 @@ i.hope.that('foo').is.a('string');
 i.expect.that('foo').is.a('string');
 i.assume.that('foo').equals('bar');
 i.sincerely.hope.that('foo').is.a('string');
+```
+
+## Planning
+
+The `assume.plan` method allows you to plan the amount of assertions that should
+be executed by your test suite. This method accepts 2 arguments:
+
+1. The amount of assertions you expect to run. This should always be an exact
+   number.
+2. An optional async callback that should be called with error as first argument
+   on failure instead of throwing an error. This makes it ideal for async
+   testing as you can just pass your continuation function.
+
+The method will return a function that should be called at the end of your
+tests. This method will still allow you to pass in an error as first argument so
+the supplied callback in second argument will be called directly with it.
+
+When the method is called we will count the amount of assertions that we're
+executed. If it's less or more than the supplied amount we will throw an error.
+
+```js
+var end = assume.plan(10);
+
+assume(10).equals(10);
+end(); // This throws an error as we only executed 1 out of the 10 asserts.
+```
+
+And with optional async callback:
+
+```js
+next = assume.plan(7, next);
+
+for (var i = 0; i < 10; i++) {
+  assume(i).equqls(i);
+}
+
+next(); // Also throws an error as we've executed 10 assertions instead of 7.
+```
+
+## Plugins
+
+We've done our best to include a bunch of assertions that should make it easier
+to test your code but it's always possible that we're missing assertions or you
+just want to eliminate repetition in your code. So we've got a plugin interface
+which allows you to extend the `assume` instance with even more assertions.
+
+### use
+
+Let's assume that we've want to extend the library with a method for checking
+the headers of a passed in HTTP request object. If it was released in npm we
+could add it as following:
+
+```js
+assume.use(require('assume-headers'));
+```
+
+The `use` method returns `assume` so it can be used to chain multiple plugin
+calls together:
+
+```js
+assume
+.use(require('assume-headers'))
+.use(require('assume-method'));
+```
+
+The `assume-headers` plugin/module should export a function which receives the
+assume instance to extend as illustrated by the example below:
+
+```js
+module.exports = function plugin(assume, util) {
+  /**
+   * Assert that the received HTTP request contains a given header.
+   *
+   * @param {String} name Name of the header that we should have received.
+   * @param {String} ms Reason of failure.
+   * @returns {Assume}
+   * @api public
+   */
+  assume.add('header', function header(name, msg) {
+    var expect = '`'+ util.string(this.value.header)'` to @ have header '+ util.string(name);
+
+    return this.test(name in this.value.headers, msg, expect);
+  });
+}
+```
+
+The plugin receives 2 arguments:
+
+1. A reference to the `assume` instance so it can be extended.
+2. Small assertion helper library which contains all the internals we're using.
+
+The helper library contains the following methods:
+
+- **name**, Reference to the `fn.name` module so you extract names from
+  functions.
+- **get**, Reference to the `get` method of the `pathval` module.
+- **string**, Inspection function which safely transforms objects, numbers,
+  dates etc. to a string.
+- **deep**, A deep assertion if the two argument deeply equal to each other.
+- **type**, Extract the type of an object to an lowercase string. Useful for
+  detecting the difference between `object`, `array`, `arguments`, `date`,
+  `buffer` etc.
+- **size**, A function which returns the size of given object or array.
+- **each**, Simple iterator which accepts an array/object and calls the supplied
+  callback with the value and key/index.
+- **nodejs**, Boolean indicating if we are running on `nodejs`.
+
+New flags can be introduced by adding properties to the `flags` object. The
+`flags` object has the following structure:
+
+- `key` This is the name of the property which will be added to the `assume`
+  instance. The property is set to `false` by default and will be to `true` once
+  once of the `flags` is accessed.
+- `value` These are the aliases that can be used to the set the property to
+  `true`.
+
+For our `.not` flags we've set the following key/value's:
+
+```js
+Assert.flags.untrue = 'doesnt, not, dont';
+```
+
+Please do note that you should try to limit the amount of flags that you add as
+they are quite expensive to process every single time.
+
+Adding new assertions to assume can be done using the following methods:
+
+#### add
+
+The `assume.add` method is a convince method for adding new methods to the
+assume prototype. It was created using the [`assign`](#assign) method so it can
+automatically add aliases/shorthand's of the method to the prototype in one go.
+The method requires 2 arguments:
+
+1. A string which is comma or space separated or an array which contains the
+   names of the methods that should be added to the prototype.
+2. The function or value that is assigned for all these properties.
+
+```js
+module.exports = function (assume, util) {
+  util.each(['GET', 'POST', 'PUT', 'DELETE'], function each(method) {
+    assume.add(method, function () {
+      var expect = '`'+ util.string(this.value.method)+'` to @ be '+ method;
+
+      return this.test(this.value.method === method, msg, expect);
+    });
+  });
+}
+```
+
+If you want to add more aliases for the `.function()` method you can simply do
+a:
+
+```js
+assume.add('execute, executes, exec', function () {
+  return this.clone().is.a('function');
+});
+```
+
+The value to assert is stored in the `value` property of the instance. If the
+`deep` flag is set, the `deeply` property is set to `true`.
+
+#### test
+
+This is the method that handles all the assertion passing and failing. It's
+_the_ most important method of all. It accepts the following arguments:
+
+- `passed`, a boolean which indicates if the assertion failed or passed.
+- `msg`, a string which is the reason or message provided by the users.
+- `expectation`, a string which explains what the assertion expected.
+- `slice`, a number which slices of stacks from the stack trace. This is keeps
+  the stack trace clear of all references to our own assertion library and only
+  contains the part of the test/suite where the assertion was initiated. This
+  value is optional and defaults to `2` so it removes the `test` and the
+  `assertion` from the stack.
+
+If the `assertion` passes the method will return it self, or it will throw.
+
+```js
+assume.add('true', function (msg) {
+  return this.test(this.value === true, msg, 'value to @ be true');
+});
+```
+
+In example above you might have noticed the odd `@` in the `expection` value.
+This is a special character and will be replaced with `not` if the `.not` flag
+was used or completely removed (including an extra whitespace at the end).
+
+#### assign
+
+Assign multiple values to a given thing. This method accepts one argument which
+is an object or prototype on where we should assign things. It will return a
+function that is responsible for the assignment on that given thing. The return
+function will require 2 arguments:
+
+1. A string which is comma or space separated or an array which contains the
+   names of the methods that should be added to the prototype.
+2. The function or value that is assigned for all these properties.
+
+To create your own custom `add` method you could simply do:
+
+```js
+var add = assume.assign(assign.prototype);
+```
+
+And the `add` function would now do exactly the same as the [`assume.add`](#add)
+method.
+
+#### clone
+
+Create an exact clone of the assume instance so it all flags and options are
+identical to the current assume instance. The method accepts one optional
+argument which is the value it should assert. If nothing is given it uses the
+current value.
+
+This can be helpful if you want to run assertions in your assertions so you can
+assert while you assert.
+
+```js
+// Yo dawg, I herd you like assertions so I put assertions in the assertions so
+// you can assert while you assert.
+
+assume.add('something', function somethign(value, msg) {
+  this.clone().is.a('string');
+  this.clone().is.endsWith('thing');
+
+  return this.test(this.value ==== 'something', msg, 'the value should be something');
+});
 ```
 
 ## License
