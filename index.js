@@ -615,6 +615,7 @@ Assert.add('clone', function clone(value) {
   };
 
   for (var alias in Assert.flags) {
+    if (!hasOwn.call(Assert.flags, alias)) continue;
     configuration[alias] = this[alias];
   }
 
