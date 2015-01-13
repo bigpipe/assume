@@ -905,6 +905,7 @@ describe('Assertions', function assertions() {
         assume(helpers).is.a('object');
 
         assume(helpers.string).is.a('function');
+        assume(helpers.nodejs).is.a('boolean');
         assume(helpers.deep).is.a('function');
         assume(helpers.each).is.a('function');
         assume(helpers.name).is.a('function');
