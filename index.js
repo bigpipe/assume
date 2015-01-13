@@ -95,8 +95,10 @@ function Assert(value, flags) {
   // These flags are by the alias function so we can generate .not and .deep
   // properties which are basically new Assert instances with these flags set.
   //
-  this.untrue = 'untrue' in flags ? flags.untrue : false;
-  this.deeply = 'deeply' in flags ? flags.deeply : false;
+  for (var alias in Assert.flags) {
+    this[alias] = alias in flags ? flags[alias] : false;
+  }
+
   this.value = value;
 
   Assert.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does, itself, which');
@@ -113,6 +115,18 @@ function Assert(value, flags) {
 Assert.config = {
   includeStack: true,     // mapped to `stacktrace` as default value.
   showDiff: true          // mapped to `diff` as default value.
+};
+
+/**
+ * List of flags and properties that need to be created for chaining purposes.
+ * Plugins could add extra properties that needed to be chained as well.
+ *
+ * @type {Object}
+ * @public
+ */
+Assert.flags = {
+  untrue: 'doesnt, not, dont',
+  deeply: 'deep'
 };
 
 /**
@@ -150,14 +164,14 @@ Assert.alias = function alias(value, assert) {
   var assign = Assert.assign(assert)
     , flags, flag, prop;
 
-  for (prop in Assert.aliases) {
-    if (!hasOwn.call(Assert.aliases, prop)) continue;
+  for (prop in Assert.flags) {
+    if (!hasOwn.call(Assert.flags, prop)) continue;
 
     if (!assert[prop]) {
       flags = {};
 
-      for (flag in Assert.aliases) {
-        if (!hasOwn.call(Assert.aliases, flag)) continue;
+      for (flag in Assert.flags) {
+        if (!hasOwn.call(Assert.flags, flag)) continue;
         flags[flag] = assert[flag];
       }
 
@@ -168,23 +182,11 @@ Assert.alias = function alias(value, assert) {
       flags.diff = assert.diff;
       flags[prop] = true;
 
-      assign(Assert.aliases[prop], new Assert(value, flags));
-    } else assign(Assert.aliases);
+      assign(Assert.flags[prop], new Assert(value, flags));
+    } else assign(Assert.flags);
   }
 
   return assert;
-};
-
-/**
- * List of aliases and properties that need to be created for chaining purposes.
- * Plugins could add extra properties that needed to be chained as well.
- *
- * @type {Object}
- * @public
- */
-Assert.aliases = {
-  untrue: 'doesnt, not, dont',
-  deeply: 'deep'
 };
 
 /**
@@ -604,15 +606,19 @@ Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
  *
  * @param {Mixed} value The new value
  * @returns {Assert}
- * @api private
+ * @api public
  */
 Assert.add('clone', function clone(value) {
-  return new Assert(value || this.value, {
+  var configuration = {
     stacktrace: this.stacktrace,
-    untrue: this.untrue,
-    deeply: this.deeply,
     diff: this.diff
-  });
+  };
+
+  for (var alias in Assert.flags) {
+    configuration[alias] = this[alias];
+  }
+
+  return new Assert(value || this.value, configuration);
 });
 
 /**
@@ -623,7 +629,7 @@ Assert.add('clone', function clone(value) {
  * @param {String} expectation What the assertion expected.
  * @param {Number} slice The amount of stack traces we need to remove.
  * @returns {Assert}
- * @api private
+ * @api public
  */
 Assert.add('test', function test(passed, msg, expectation, slice) {
   called++; // Needed for tracking the amount of executed assertions.
@@ -719,7 +725,8 @@ Assert.use = function use(plugin) {
     deep: deep,           // Deep assertion.
     type: type,           // Get class information.
     size: size,           // Get the size of an object.
-    each: each            // Iterate over arrays.
+    each: each,           // Iterate over arrays.
+    nodejs: nodejs        // Are we running on Node.js.
   });
 
   return Assert;
