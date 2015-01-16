@@ -89,6 +89,7 @@ function Assert(value, flags) {
   flags = flags || {};
 
   this.stacktrace = 'stacktrace' in flags ? flags.stacktrace : Assert.config.includeStack;
+  this.sliceStack = 'slice' in flags ? flags.slice : Assert.config.sliceStack;
   this.diff = 'diff' in flags ? flags.diff : Assert.config.showDiff;
 
   //
@@ -114,7 +115,8 @@ function Assert(value, flags) {
  */
 Assert.config = {
   includeStack: true,     // mapped to `stacktrace` as default value.
-  showDiff: true          // mapped to `diff` as default value.
+  showDiff: true,         // mapped to `diff` as default value.
+  sliceStack: 2           // Number of stacks that we should slice of the err stack..
 };
 
 /**
@@ -611,7 +613,8 @@ Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
 Assert.add('clone', function clone(value) {
   var configuration = {
     stacktrace: this.stacktrace,
-    diff: this.diff
+    slice: this.sliceStack + 1,
+    diff: this.diff,
   };
 
   for (var alias in Assert.flags) {
@@ -644,7 +647,7 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   }
 
   msg = msg || 'Unknown assertation failure occured';
-  slice = slice || 2;
+  slice = slice || this.sliceStack;
 
   if (expectation) msg += ', assumed ' + expectation;
 
