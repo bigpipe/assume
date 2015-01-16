@@ -950,3 +950,34 @@ describe('i', function () {
     });
   });
 });
+
+describe('github issues', function () {
+  'use strict';
+
+  var assume = require('../');
+
+  if (Object.defineProperty) describe('#2', function () {
+    it('does not throw errors when unspecified properties are accessed', function (next) {
+      var foo = { bar: 'bar' };
+
+      Object.defineProperty(foo, 'oops', {
+        configurable: true, enumerable: true,
+        get: function () {
+          throw new Error('I should not be accessed');
+        },
+        set: function () {
+          throw new Error('Double WTF, this should never happen');
+        }
+      });
+
+      try { assume(foo).equals(foo); }
+      catch (e) { return next(e); }
+
+      //
+      // This _should_ still throw as we're doing deep checking of values.
+      //
+      try { assume(foo).deep.equals(foo); }
+      catch (e) { next(); }
+    });
+  });
+});
