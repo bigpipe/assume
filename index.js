@@ -535,7 +535,7 @@ Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
   var expect = '`'+ string(this.value) +'` to @ equal (===) '+ string(thing);
 
   if (!this.deeply) return this.test(this.value === thing, msg, expect);
-  return this.eql(thing, msg, 3);
+  return this.eql(thing, msg, this.sliceStack + 1);
 });
 
 /**
