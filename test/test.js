@@ -651,7 +651,13 @@ describe('Assertions', function assertions() {
       assume('foo').does.not.equal('bar');
 
       try { assume('foo').does.not.equal('foo'); }
-      catch (e) { next(); }
+      catch (e) {
+        if (e.message.indexOf('not equal') < 0) {
+          next(new Error('expected `@ equals` to have been replaced by `not equals`'));
+        } else {
+          next();
+        }
+      }
     });
   });
 
