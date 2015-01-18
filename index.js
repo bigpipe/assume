@@ -535,7 +535,9 @@ Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
   var expect = '`'+ string(this.value) +'` to @ equal (===) '+ string(thing);
 
   if (!this.deeply) return this.test(this.value === thing, msg, expect);
-  return this.eql(thing, msg, this.sliceStack + 1);
+
+  this.sliceStack++;
+  return this.eql(thing, msg);
 });
 
 /**
@@ -543,14 +545,13 @@ Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
  *
  * @param {Mixed} thing Thing it should equal.
  * @param {String} msg Reason of failure.
- * @param {Number} slice Amount of stack traces to slice off.
  * @returns {Assert}
  * @api public
  */
-Assert.add('eql, eqls', function eqls(thing, msg, slice) {
+Assert.add('eql, eqls', function eqls(thing, msg) {
   var expect = '`'+ string(this.value) +'` to deeply equal '+ thing;
 
-  return this.test(deep(this.value, thing), msg, expect, slice);
+  return this.test(deep(this.value, thing), msg, expect);
 });
 
 /**
