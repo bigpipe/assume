@@ -1,4 +1,8 @@
 if ('undefined' === typeof global) global = (function that() {
+  //
+  // This should be out-side of the `use strict` statement so our `this` value
+  // is set to the global or window instead of `undefined`.
+  //
   return this;
 }());
 
