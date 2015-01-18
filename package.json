@@ -10,7 +10,7 @@
     "prepublish": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
     "node": "mocha --reporter spec --ui bdd test/test.js",
     "test": "npm run-script browserify-tests && npm run-script phantom",
-    "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd test/test.js",
+    "test-travis": "npm run node && istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd test/test.js",
     "watch": "mocha --watch --reporter spec --ui bdd test/test.js"
   },
   "repository": {
