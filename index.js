@@ -643,7 +643,7 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   if (passed) return this;
 
   if (expectation && expectation.indexOf('@')) {
-    if (this.untrue) expectation = expectation.replace(/\@\s/g, 'not');
+    if (this.untrue) expectation = expectation.replace(/\@/g, 'not');
     else expectation = expectation.replace(/\@\s/g, '');
   }
 
