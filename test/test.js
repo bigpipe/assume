@@ -11,6 +11,37 @@ describe('Assertions', function assertions() {
 
   var assume = require('../');
 
+  if ('stackTraceLimit' in Error) it('can configure the amount stacks to slice off', function (next) {
+    Error.stackTraceLimit = 5;
+
+    var assumption = assume('foo');
+    assumption.sliceStack = 3;
+
+    try { assumption.equals('bar'); }
+    catch (e) {
+      var stack = e.stack.split('\n')
+        , ats = 0;
+
+      //
+      // We need to count the `ats` as in Node we also include the failing line
+      // of code.
+      //
+      for (var i = 0; i < stack.length; i++) {
+        if (stack[i].trim().indexOf('at ') === 0) {
+          ats++;
+        }
+      }
+
+      assume(ats).equals(3);
+
+      //
+      // Reset value again to normal level.
+      //
+      Error.stackTraceLimit = 10;
+      next();
+    }
+  });
+
   describe('#a', function () {
     it('classifies NaN', function (next) {
       assume(NaN).to.be.a('nan');
