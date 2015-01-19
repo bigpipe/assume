@@ -377,12 +377,12 @@ assume([1,2]).equals([1,2]);
 
 #### either
 
-Assert that the value is either one of the given values. It can be prefixed with
-`.deep` for deep assertions.
+Assert that the value is either one of the values of the given array. It can be
+prefixed with `.deep` for deep assertions.
 
 ```js
-assume('foo').is.either('bar', 'banana', 'foo');
-assume({ foo: 'bar' }).is.either('bar', 'banana', { foo: 'bar' });
+assume('foo').is.either(['bar', 'banana', 'foo']);
+assume({ foo: 'bar' }).is.either(['bar', 'banana', { foo: 'bar' }]);
 ```
 
 #### throw, throws, fail, fails

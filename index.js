@@ -557,13 +557,13 @@ Assert.add('eql, eqls', function eqls(thing, msg) {
 /**
  * Assert that the value is either one of the given values.
  *
- * @param {Arguments} .. All the values it can match
+ * @param {Array} arrgs All the values it can match.
+ * @param {String} msg Reason of failure.
  * @returns {Assert}
  * @api public
  */
-Assert.add('either', function either() {
-  var args = Array.prototype.slice.call(arguments, 0)
-    , i = args.length
+Assert.add('either', function either(args, msg) {
+  var i = args.length
     , result = false
     , expect = [];
 
@@ -576,7 +576,7 @@ Assert.add('either', function either() {
   }
 
   expect = '`'+ string(this.value) +'` to equal either `'+ expect.join('` or `') +'`';
-  return this.test(result, '', expect);
+  return this.test(result, msg, expect);
 });
 
 /**
@@ -655,7 +655,9 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   var failure = new Error(msg)
     , err = { message: failure.message, stack: '' };
 
-  if (this.stacktrace) err.stack = failure.stack || err.stack;
+  if (this.stacktrace) {
+    err.stack = failure.stack || err.stack;
+  }
 
   //
   // Clean up the stack by slicing off the parts that are pointless to most
