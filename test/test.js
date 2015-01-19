@@ -9,8 +9,7 @@ if ('undefined' === typeof global) global = (function that() {
 describe('Assertions', function assertions() {
   'use strict';
 
-  var assume = require('../')
-    , undefined;
+  var assume = require('../');
 
   if ('stackTraceLimit' in Error) it('can configure the amount stacks to slice off', function (next) {
     Error.stackTraceLimit = 5;
