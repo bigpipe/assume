@@ -1,7 +1,7 @@
 'use strict';
 
-var pretty = require('prettify-error')
-  , string = require('object-inspect')
+var stringify = require('object-inspect')
+  , pretty = require('prettify-error')
   , displayName = require('fn.name')
   , pathval = require('pathval')
   , nodejs = require('is-node')
@@ -54,7 +54,7 @@ function size(collection) {
  *
  * @param {Array} arr Array to iterate over.
  * @param {Function} fn Callback for each item.
- * @private
+ * @api private
  */
 function each(what, fn) {
   if ('array' === type(what)) {
@@ -66,6 +66,58 @@ function each(what, fn) {
       if (false === fn(what[key], key, what)) break;
     }
   }
+}
+
+/**
+ * Return a formatter function which compiles the expectation message. The
+ * message can contain various of patterns which will be replaced with
+ * a stringified/parsed version of the supplied argument for that given
+ * placeholder pattern. The following patterns are supported:
+ *
+ * - %% : Escape the % so you can write %d in your messages as %%d
+ * - %d : Cast argument in to a number.
+ * - %s : Cast argument in to a string.
+ * - %f : Transform function in to the name of the function.
+ * - %j : Transform object to a string.
+ *
+ * @param {String} expectation The expectation message.
+ * @returns {Function}
+ * @api private
+ */
+function format() {
+  var args = Array.prototype.slice.call(arguments, 0)
+    , expectation = args.shift()
+    , length = args.length
+    , i = 0;
+
+  return function compile(not) {
+    if (not) expectation = expectation.replace(/\@/g, 'not');
+    else expectation = expectation.replace(/\@\s/g, '');
+
+    return expectation.replace(/%[sdjf%]/g, function replace(char) {
+      if (i >= length) return char;
+
+      switch (char) {
+        case '%%':
+        return '%';
+
+        case '%s':
+        return String(args[i++]);
+
+        case '%d':
+        return Number(args[i++]);
+
+        case '%f':
+        return displayName(args[i++]);
+
+        case '%j':
+        try { return stringify(args[i++]); }
+        catch (e) { return '<error was thrown: '+ e.message +'>'; }
+
+        default: return char;
+      }
+    });
+  };
 }
 
 /**
@@ -235,7 +287,7 @@ Assert.add('a, an', function typecheck(of, msg) {
  * @api public
  */
 Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor, msg) {
-  var expect = displayName(this.value) +' to @ be an instanceof '+ displayName(constructor);
+  var expect = format('%f to @ be an instanceof %f', this.value, constructor);
 
   return this.test(this.value instanceof constructor, msg, expect);
 });
@@ -251,7 +303,7 @@ Assert.add('instanceOf, instanceof, inherits, inherit', function of(constructor,
 Assert.add('include, includes, contain, contains', function contain(val, msg) {
   var includes = false
     , of = type(this.value)
-    , expect = '`'+ string(this.value) +'` to @ include '+ val;
+    , expect = format('`%j` to @ include %j', this.value, val);
 
   switch (of) {
     case 'array':
@@ -287,7 +339,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
  * @api public
  */
 Assert.add('ok, okay, truthy, truly', function ok(msg) {
-  var expect = '`'+ string(this.value) +'` to @ be truthy';
+  var expect = format('`%j` to @ be truthy', this.value);
 
   return this.test(Boolean(this.value), msg, expect);
 });
@@ -299,8 +351,8 @@ Assert.add('ok, okay, truthy, truly', function ok(msg) {
  * @returns {Assert}
  * @api public
  */
-Assert.add('falsely, falsey', function nope(msg) {
-  var expect = '`'+ string(this.value) +'` to @ be falsely';
+Assert.add('falsely, falsey, falsy', function nope(msg) {
+  var expect = format('`%j` to @ be falsely', this.value);
 
   return this.test(Boolean(this.value) === false, msg, expect);
 });
@@ -313,7 +365,7 @@ Assert.add('falsely, falsey', function nope(msg) {
  * @api public
  */
 Assert.add('true', function ok(msg) {
-  var expect = '`'+ string(this.value) +'` to @ equal (===) true';
+  var expect = format('`%j` to @ equal (===) true');
 
   return this.test(this.value === true, msg, expect);
 });
@@ -326,7 +378,7 @@ Assert.add('true', function ok(msg) {
  * @api public
  */
 Assert.add('false', function nope(msg) {
-  var expect = '`'+ string(this.value) +'` to @ equal (===) false';
+  var expect = format('`%j` to @ equal (===) false', this.value);
 
   return this.test(this.value === false, msg, expect);
 });
@@ -339,7 +391,7 @@ Assert.add('false', function nope(msg) {
  * @api public
  */
 Assert.add('exists, exist', function exists(msg) {
-  var expect = '`'+ string(this.value) +'` to @ exist';
+  var expect = format('`%j` to @ exist', this.value);
 
   return this.test(this.value != null, msg, expect);
 });
@@ -353,7 +405,7 @@ Assert.add('exists, exist', function exists(msg) {
  * @api public
  */
 Assert.add('length, lengthOf, size', function length(value, msg) {
-  var expect = '`'+ string(this.value) +'` to @ have a length of '+ value;
+  var expect = format('`%j` to @ have a length of %d', this.value, value);
 
   return this.test(size(this.value) === +value, msg, expect);
 });
@@ -366,7 +418,7 @@ Assert.add('length, lengthOf, size', function length(value, msg) {
  * @api public
  */
 Assert.add('empty', function empty(msg) {
-  var expect = '`'+ string(this.value) +'` to @ be empty';
+  var expect = format('`%j` to @ be empty', this.value);
 
   return this.test(size(this.value) === 0, msg, expect);
 });
@@ -381,7 +433,7 @@ Assert.add('empty', function empty(msg) {
  */
 Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
-    , expect = amount +' to @ be greater than '+ value;
+    , expect = format('%d to @ be greater than %d', amount, value);
 
   return this.test(amount > value, msg, expect);
 });
@@ -396,7 +448,7 @@ Assert.add('above, gt, greater, greaterThan', function above(value, msg) {
  */
 Assert.add('least, gte, atleast', function least(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
-    , expect = amount +' to @ be greater or equal to '+ value;
+    , expect = format('%d to @ be greater or equal to %d', amount, value);
 
   return this.test(amount >= value, msg, expect);
 });
@@ -404,13 +456,13 @@ Assert.add('least, gte, atleast', function least(value, msg) {
 /**
  * Assert that the value starts with the given value.
  *
- * @param {String} value String it should start with.
+ * @param {String|Array} value String it should start with.
  * @param {String} msg Reason of failure.
  * @returns {Assert}
  * @api public
  */
 Assert.add('start, starts, startsWith, startWith', function start(value, msg) {
-  var expect = string(this.value) +'to @ start with '+ string(value);
+  var expect = format('`%j` to @ start with %j', this.value, value);
 
   return this.test(0 === this.value.indexOf(value), msg, expect);
 });
@@ -425,7 +477,7 @@ Assert.add('start, starts, startsWith, startWith', function start(value, msg) {
  */
 Assert.add('end, ends, endsWith, endWith', function end(value, msg) {
   var index = this.value.indexOf(value, this.value.length - value.length)
-    , expect = string(this.value) +' to @ end with '+ string(value);
+    , expect = format('`%j` to @ end with %j', this.value, value);
 
   return this.test(index >= 0, msg, expect);
 });
@@ -441,8 +493,7 @@ Assert.add('end, ends, endsWith, endWith', function end(value, msg) {
  * @api public
  */
 Assert.add('closeTo, close, approximately, near', function close(value, delta, msg) {
-  var expect = string(this.value) +'to @ be close to '
-               + string(value) +' ±'+ string(delta);
+  var expect = format('`%j` to @ be close to %d ± %d', this.value, value, delta);
 
   return this.test(Math.abs(this.value - value) <= delta, msg, expect);
 });
@@ -457,7 +508,7 @@ Assert.add('closeTo, close, approximately, near', function close(value, delta, m
  */
 Assert.add('below, lt, less, lessThan', function below(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
-    , expect = amount +' to @ be less than '+ value;
+    , expect = format('%d to @ be less than %d', amount, value);
 
   return this.test(amount < value, msg, expect);
 });
@@ -472,7 +523,7 @@ Assert.add('below, lt, less, lessThan', function below(value, msg) {
  */
 Assert.add('most, lte, atmost', function most(value, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
-    , expect = amount +' to @ be less or equal to '+ value;
+    , expect = format('%d to @ be less or equal to %d', amount, value);
 
   return this.test(amount <= value, msg, expect);
 });
@@ -488,7 +539,7 @@ Assert.add('most, lte, atmost', function most(value, msg) {
  */
 Assert.add('within, between', function within(start, finish, msg) {
   var amount = type(this.value) !== 'number' ? size(this.value) : this.value
-    , expect = amount +' to @ be greater or equal to '+ start +' and @ be less or equal to'+ finish;
+    , expect = format('%d to @ be greater or equal to %d and @ be less or equal to %d', amount, start, finish);
 
   return this.test(amount >= start && amount <= finish, msg, expect);
 });
@@ -502,7 +553,7 @@ Assert.add('within, between', function within(start, finish, msg) {
  * @api public
  */
 Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown', function has(prop, msg) {
-  var expect = 'object @ to have own property '+ prop;
+  var expect = format('`%j` @ to have own property %s', this.value, prop);
 
   return this.test(hasOwn.call(this.value, prop), msg, expect);
 });
@@ -518,7 +569,7 @@ Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown', 
 Assert.add('match, matches', function test(regex, msg) {
   if ('string' === typeof regex) regex = new RegExp(regex);
 
-  var expect = '`'+ string(this.value) +'` to @ match '+ string(regex);
+  var expect = format('`%j` to @ match %j', this.value, regex);
 
   return this.test(!!regex.test(this.value), msg, expect);
 });
@@ -532,7 +583,7 @@ Assert.add('match, matches', function test(regex, msg) {
  * @api public
  */
 Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
-  var expect = '`'+ string(this.value) +'` to @ equal (===) '+ string(thing);
+  var expect = format('`%j` to @ equal (===) `%j`', this.value, thing);
 
   if (!this.deeply) return this.test(this.value === thing, msg, expect);
 
@@ -549,7 +600,7 @@ Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
  * @api public
  */
 Assert.add('eql, eqls', function eqls(thing, msg) {
-  var expect = '`'+ string(this.value) +'` to deeply equal '+ thing;
+  var expect = format('`%j` to deeply equal `%j`', this.value, thing);
 
   return this.test(deep(this.value, thing), msg, expect);
 });
@@ -563,19 +614,20 @@ Assert.add('eql, eqls', function eqls(thing, msg) {
  * @api public
  */
 Assert.add('either', function either(args, msg) {
-  var i = args.length
+  var expect = '`%j` to equal either `%j` '
+    , i = args.length
     , result = false
-    , expect = [];
+    , values = [];
 
   while (i-- || result) {
     if (!this.deeply) result = this.value === args[i];
     else result = deep(this.value, args[i]);
     if (result) break;
 
-    expect.push(string(args[i]));
+    values.push(args[i]);
   }
 
-  expect = '`'+ string(this.value) +'` to equal either `'+ expect.join('` or `') +'`';
+  expect = format.apply(null, [expect + (new Array(values)).join('or `%j` ')].concat(values));
   return this.test(result, msg, expect);
 });
 
@@ -600,7 +652,7 @@ Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
     }
   }
 
-  return this.test(false, msg, 'expected function to @ throw');
+  return this.test(false, msg, format('%f to @ throw', this.value));
 });
 
 /**
@@ -642,15 +694,10 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   if (this.untrue) passed = !passed;
   if (passed) return this;
 
-  if (expectation && expectation.indexOf('@')) {
-    if (this.untrue) expectation = expectation.replace(/\@/g, 'not');
-    else expectation = expectation.replace(/\@\s/g, '');
-  }
-
   msg = msg || 'Unknown assertation failure occured';
   slice = slice || this.sliceStack;
 
-  if (expectation) msg += ', assumed ' + expectation;
+  if (expectation) msg += ', assumed ' + expectation(this.untrue);
 
   var failure = new Error(msg)
     , err = { message: failure.message, stack: '' };
@@ -728,7 +775,8 @@ Assert.use = function use(plugin) {
   plugin(this, {
     name: displayName,    // Extract the name of a function.
     get: pathval.get,     // Get a value from an object.
-    string: string,       // Transform thing to a string.
+    string: stringify,    // Transform thing to a string.
+    format: format,       // Format an expectation message.
     deep: deep,           // Deep assertion.
     type: type,           // Get class information.
     size: size,           // Get the size of an object.
