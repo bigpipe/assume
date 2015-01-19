@@ -53,6 +53,7 @@ describe('Assertions', function assertions() {
 
     it('classifies undefined', function (next) {
       assume(undefined).to.be.a('undefined');
+      assume(void 0).to.be.a('undefined');
 
       try { assume(null).to.be.a('undefined'); }
       catch (e) { next(); }
