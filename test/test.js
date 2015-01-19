@@ -1015,10 +1015,12 @@ describe('github issues', function () {
       catch (e) { return next(e); }
 
       //
-      // This _should_ still throw as we're doing deep checking of values.
+      // This _should_ still not throw.
       //
       try { assume(foo).deep.equals(foo); }
-      catch (e) { next(); }
+      catch (e) { next(e); }
+
+      next();
     });
   });
 });
