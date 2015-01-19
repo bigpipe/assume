@@ -22,6 +22,7 @@ var undefined
 function type(of) {
   if (Buffer.isBuffer(of)) return 'buffer';
   if (of === undefined) return 'undefined';
+  if (of === null) return 'null';
   if (of !== of) return 'nan';
 
   return toString.call(of).slice(8, -1).toLowerCase();

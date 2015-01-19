@@ -59,6 +59,13 @@ describe('Assertions', function assertions() {
     });
 
     it('classifies undefined', function (next) {
+      assume(null).to.be.a('null');
+
+      try { assume(undefined).to.be.a('null'); }
+      catch (e) { next(); }
+    });
+
+    it('classifies arguments', function (next) {
       assume(arguments).to.be.a('arguments');
 
       try { assume(null).to.be.a('arguments'); }
