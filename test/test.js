@@ -9,7 +9,8 @@ if ('undefined' === typeof global) global = (function that() {
 describe('Assertions', function assertions() {
   'use strict';
 
-  var assume = require('../');
+  var assume = require('../')
+    , undefined;
 
   if ('stackTraceLimit' in Error) it('can configure the amount stacks to slice off', function (next) {
     Error.stackTraceLimit = 5;
@@ -47,6 +48,20 @@ describe('Assertions', function assertions() {
       assume(NaN).to.be.a('nan');
 
       try { assume('foo').to.be.a('nan'); }
+      catch (e) { next(); }
+    });
+
+    it('classifies undefined', function (next) {
+      assume(undefined).to.be.a('undefined');
+
+      try { assume(null).to.be.a('undefined'); }
+      catch (e) { next(); }
+    });
+
+    it('classifies undefined', function (next) {
+      assume(arguments).to.be.a('arguments');
+
+      try { assume(null).to.be.a('arguments'); }
       catch (e) { next(); }
     });
 
@@ -127,8 +142,47 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.int16Array) it('classifies int16arrays');
-    if (global.int32Array) it('classifies int32arrays');
+    if (global.Int16Array) it('classifies int16arrays', function (next) {
+      assume(new Int16Array()).to.be.a('int16array');
+
+      try { assume([]).to.be.a('int16array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Int32Array) it('classifies int32arrays', function (next) {
+      assume(new Int32Array()).to.be.a('int32array');
+
+      try { assume(new Int16Array()).to.be.a('int32array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Int8Array) it('classifies int8arrays', function (next) {
+      assume(new Int8Array()).to.be.a('int8array');
+
+      try { assume([]).to.be.a('int8array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Uint16Array) it('classifies uint16arrays', function (next) {
+      assume(new Uint16Array()).to.be.a('uint16array');
+
+      try { assume(new Int16Array()).to.be.a('uint16array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Uint32Array) it('classifies uint32arrays', function (next) {
+      assume(new Uint32Array()).to.be.a('uint32array');
+
+      try { assume(new Uint16Array()).to.be.a('uint32array'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Uint8Array) it('classifies uint8arrays', function (next) {
+      assume(new Uint8Array()).to.be.a('uint8array');
+
+      try { assume([]).to.be.a('uint8array'); }
+      catch (e) { next(); }
+    });
 
     it('is aliased as `an`', function () {
       var x = assume('foo');
@@ -920,10 +974,17 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    it('is .arguments', function (next) {
+    it('.arguments', function (next) {
       assume(arguments).is.arguments();
 
       try { assume(true).is.arguments(); }
+      catch (e) { next(); }
+    });
+
+    it('.undefined', function (next) {
+      assume(undefined).is.undefined();
+
+      try { assume(true).is.undefined(); }
       catch (e) { next(); }
     });
   });

@@ -7,7 +7,8 @@ var stringify = require('object-inspect')
   , nodejs = require('is-node')
   , deep = require('deep-eql');
 
-var called = 0
+var undefined
+  , called = 0
   , toString = Object.prototype.toString
   , hasOwn = Object.prototype.hasOwnProperty;
 
@@ -20,6 +21,7 @@ var called = 0
  */
 function type(of) {
   if (Buffer.isBuffer(of)) return 'buffer';
+  if (of === undefined) return 'undefined';
   if (of !== of) return 'nan';
 
   return toString.call(of).slice(8, -1).toLowerCase();
@@ -273,7 +275,7 @@ Assert.add('a, an', function typecheck(of, msg) {
   of = of.toString().toLowerCase();
 
   var value = type(this.value)
-    , expect = value +' to @ be a '+ of;
+    , expect = format('`%j` (%s) to @ be a %s', this.value, value, of);
 
   return this.test(value === of, msg, expect);
 });
