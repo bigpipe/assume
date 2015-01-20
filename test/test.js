@@ -1,10 +1,21 @@
+//
+// This should be out-side of the `use strict` statement so our `this` value
+// is set to the global or window instead of `undefined`.
+//
 if ('undefined' === typeof global) global = (function that() {
-  //
-  // This should be out-side of the `use strict` statement so our `this` value
-  // is set to the global or window instead of `undefined`.
-  //
   return this;
 }());
+
+//
+// Attempt to detect generator support.
+//
+var generators;
+try {
+  eval('(function*(){})()');
+  generators = true;
+} catch(err){
+  generators =  false;
+}
 
 describe('Assertions', function assertions() {
   'use strict';
@@ -297,10 +308,13 @@ describe('Assertions', function assertions() {
   });
 
   describe('#falsely', function () {
-    it('is aliased as `falsey`', function () {
+    it('is aliased as `falsey` and `falsy`', function () {
       var x = assume('aaaabe');
 
-      if (x.falsely !== x.falsey) throw new Error('Incorrectly aliased');
+      if (
+           x.falsely !== x.falsey
+        || x.falsely !== x.falsy
+      ) throw new Error('Incorrectly aliased');
     });
 
     it('is falsely', function (next) {
@@ -834,6 +848,52 @@ describe('Assertions', function assertions() {
       assume(function () { throw true; }).throws(true);
     });
   });
+
+  describe('.finite', function () {
+    it('is aliased as `isFinite`, `finiteness`', function () {
+      var x = assume(1);
+
+      if (
+           x.finite !== x.isFinite
+        || x.finite !== x.finiteness
+      ) throw new Error('Incorrectly aliased');
+    });
+
+    it('is finite', function (next) {
+      assume(100).is.finite();
+      assume('100').is.finite();
+
+      try { assume(NaN).is.finite(); }
+      catch (e) {
+        try { assume(Infinity).is.finite(); }
+        catch (e) { next(); }
+      }
+    });
+
+    it('support strict mode', function (next) {
+      assume(1).is.strict.finite();
+
+      try { assume('1').is.strict.finite(); }
+      catch (e) { next(); }
+    });
+  });
+
+  //
+  // We need to `eval` this as the `*` in the generator function is seen as
+  // invalid syntax in older versions of the language.
+  //
+  if (generators) (new Function('describe', 'assume', [
+  "describe('#generators', function () {",
+  "  it('correctly identifies a generator', function bar(next) {",
+  "    function* foo() {",
+  "      yield 1;",
+  "    }",
+  "    assume(foo).is.generator();",
+  "    try { assume(bar).is.generator(); }",
+  "    catch (e) { next(); }",
+  "  });",
+  "});"
+  ].join('\n')))(describe, assume);
 
   describe('#approximately', function () {
     it('is aliased as `throw`, `fail`, `fails`', function () {
