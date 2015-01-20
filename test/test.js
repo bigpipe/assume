@@ -835,7 +835,7 @@ describe('Assertions', function assertions() {
     });
   });
 
-  describe('approximately', function () {
+  describe('#approximately', function () {
     it('is aliased as `throw`, `fail`, `fails`', function () {
       var x = assume('foo');
 
@@ -859,7 +859,7 @@ describe('Assertions', function assertions() {
     });
   });
 
-  describe('.start', function () {
+  describe('#start', function () {
     it('is aliased as `starts`, `startsWith`, `startWith`', function () {
       var x = assume('foo');
 
@@ -879,7 +879,7 @@ describe('Assertions', function assertions() {
     });
   });
 
-  describe('.end', function () {
+  describe('#end', function () {
     it('is aliased as `ends`, `endsWith`, `endWith`', function () {
       var x = assume('foo');
 
