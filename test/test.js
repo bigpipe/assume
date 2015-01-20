@@ -43,6 +43,12 @@ describe('Assertions', function assertions() {
   });
 
   describe('#a', function () {
+    it('is aliased as `an`', function () {
+      var x = assume('foo');
+
+      if (x.a !== x.an) throw new Error('Incorrectly aliased');
+    });
+
     it('classifies NaN', function (next) {
       assume(NaN).to.be.a('nan');
 
@@ -189,12 +195,6 @@ describe('Assertions', function assertions() {
 
       try { assume([]).to.be.a('uint8array'); }
       catch (e) { next(); }
-    });
-
-    it('is aliased as `an`', function () {
-      var x = assume('foo');
-
-      if (x.a !== x.an) throw new Error('Incorrectly aliased');
     });
   });
 
@@ -967,31 +967,151 @@ describe('Assertions', function assertions() {
   });
 
   describe('type checks', function () {
-    it('.string', function (next) {
-      assume('function').is.string();
+    it('.nan', function (next) {
+      assume(NaN).is.nan();
 
-      try { assume(true).is.string(); }
+      try { assume(undefined).is.nan(); }
       catch (e) { next(); }
     });
 
-    it('.array', function (next) {
-      assume(['function']).is.array();
+    it('.undefined', function (next) {
+      assume(undefined).is.undefined();
+      assume(void 0).is.undefined();
 
-      try { assume(true).is.array(); }
+      try { assume(null).is.undefined(); }
+      catch (e) { next(); }
+    });
+
+    it('.null', function (next) {
+      assume(null).is.null();
+
+      try { assume(undefined).is.null(); }
       catch (e) { next(); }
     });
 
     it('.arguments', function (next) {
       assume(arguments).is.arguments();
 
-      try { assume(true).is.arguments(); }
+      try { assume(null).is.arguments(); }
       catch (e) { next(); }
     });
 
-    it('.undefined', function (next) {
-      assume(undefined).is.undefined();
+    it('.string', function (next) {
+      assume(String('foo')).is.string();
+      assume('string').is.string();
 
-      try { assume(true).is.undefined(); }
+      try { assume(['array']).is.string(); }
+      catch (e) { next(); }
+    });
+
+    it('.number', function (next) {
+      assume(Number('0.1')).is.number();
+      assume(0).is.number();
+
+      try { assume(['array']).is.number(); }
+      catch (e) { next(); }
+    });
+
+    it('.array', function (next) {
+      assume(new Array(99)).is.array();
+      assume([]).is.array();
+
+      try { assume(arguments).is.array(); }
+      catch (e) { next(); }
+    });
+
+    it('.date', function (next) {
+      assume(new Date()).is.date();
+
+      try { assume('2014/04/04').is.date(); }
+      catch (e) { next(); }
+    });
+
+    it('.error', function (next) {
+      assume(new Error('foo')).is.error();
+
+      try { assume('foo').is.error(); }
+      catch (e) { next(); }
+    });
+
+    it('.regexp', function (next) {
+      assume(new RegExp('foo', 'm')).is.regexp();
+      assume(/foo/).is.regexp();
+
+      try { assume('/regexp/').to.be.a('regexp'); }
+      catch (e) { next(); }
+    });
+
+    it('.boolean', function (next) {
+      assume(Boolean(0)).is.boolean();
+      assume(Boolean(1)).is.boolean();
+      assume(false).is.boolean();
+      assume(true).is.boolean();
+
+      try { assume('true').to.be.a('boolean'); }
+      catch (e) { next(); }
+    });
+
+    if (global.Buffer) it('.buffers', function (next) {
+      assume(new Buffer(0)).is.buffer();
+
+      try { assume({}).is.buffer(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Float32Array) it('.float32arrays', function (next) {
+      assume(new Float32Array(2)).is.float32array();
+
+      try { assume([]).is.float32array() }
+      catch (e) { next(); }
+    });
+
+    if (global.Float64Array) it('.float64arrays', function (next) {
+      assume(new Float64Array(2)).float64array();
+
+      try { assume([]).isfloat64array(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Int16Array) it('.int16arrays', function (next) {
+      assume(new Int16Array()).is.int16array();
+
+      try { assume([]).is.int16array(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Int32Array) it('.int32arrays', function (next) {
+      assume(new Int32Array()).is.int32array();
+
+      try { assume(new Int16Array()).is.int32array(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Int8Array) it('.int8arrays', function (next) {
+      assume(new Int8Array()).is.int8array();
+
+      try { assume([]).is.int8array(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Uint16Array) it('.uint16arrays', function (next) {
+      assume(new Uint16Array()).is.uint16array();
+
+      try { assume(new Int16Array()).is.uint16array(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Uint32Array) it('.uint32arrays', function (next) {
+      assume(new Uint32Array()).is.uint32array();
+
+      try { assume(new Uint16Array()).is.uint32array(); }
+      catch (e) { next(); }
+    });
+
+    if (global.Uint8Array) it('classifies uint8arrays', function (next) {
+      assume(new Uint8Array()).is.uint8array();
+
+      try { assume([]).is.uint8array(); }
       catch (e) { next(); }
     });
   });
