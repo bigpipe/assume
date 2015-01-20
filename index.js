@@ -659,6 +659,49 @@ Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
 });
 
 /**
+ * Assert if the given value is finite.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('isFinite, finite, finiteness', function finite(msg) {
+  var expect = format('`%j`s @ a is a finite number')
+    , result;
+
+  if (this.deeply) result = Number.isFinite(this.value);
+  else result = isFinite(this.value);
+
+  return this.test(result, msg, expect);
+});
+
+/**
+ * Assert if the given function is an ES6 generator.
+ *
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('generator', function generators(msg) {
+  var expect = format('%f to @ be a generator', this.value)
+    , result;
+
+  //
+  // Non standard function from Mozilla allows us to check if a function is
+  // a generator.
+  //
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/isGenerator
+  //
+  if ('function' === this.value.isGenerator) {
+    result = this.value.isGenerator();
+  } else {
+    result = 'function' === type(this.value) && this.value.toString().indexOf('function*') === 0;
+  }
+
+  return this.test(result, msg, expect);
+});
+
+/**
  * Create a clone of the current assertion instance which has the same
  * configuration but a different value.
  *
@@ -796,10 +839,10 @@ Assert.use = function use(plugin) {
 each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean,'
   + 'new Float32Array,new Float64Array,new Int16Array,new Int32Array,new Int8Array,'
   + 'new Uint16Array,new Uint32Array,new Uint8Array,new Uint8ClampedArray,'
-  + 'new ParallelArray,new Map,new Set,new WeakMap,new WeakSet,'
+  + 'new ParallelArray,new Map,new Set,new WeakMap,new WeakSet,new TypedArray(1),',
   + 'new DataView(new ArrayBuffer(1)),new ArrayBuffer(1),new Promise(function(){}),'
   + 'new Blob,arguments,null,undefined,new Buffer(1),NaN,navigator,location,'
-  + 'new Function'
+  + 'new Function,new Proxy({}, function(){}),Symbol("assume"),Math'
 ).split(','), function iterate(code) {
   var name, arg;
 
