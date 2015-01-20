@@ -798,7 +798,9 @@ each(('new String,new Number,new Array,new Date,new Error,new RegExp,new Boolean
   + 'new Uint16Array,new Uint32Array,new Uint8Array,new Uint8ClampedArray,'
   + 'new ParallelArray,new Map,new Set,new WeakMap,new WeakSet,'
   + 'new DataView(new ArrayBuffer(1)),new ArrayBuffer(1),new Promise(function(){}),'
-  + 'new Blob,arguments,null,undefined,new Buffer(1),NaN').split(','), function iterate(code) {
+  + 'new Blob,arguments,null,undefined,new Buffer(1),NaN,navigator,location,'
+  + 'new Function'
+).split(','), function iterate(code) {
   var name, arg;
 
   //

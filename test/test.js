@@ -1020,6 +1020,14 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
+    it('.function', function foo(next) {
+      assume(foo).is.function();
+      assume(new Function()).is.function();
+
+      try { assume('2014/04/04').is.function(); }
+      catch (e) { next(); }
+    });
+
     it('.date', function (next) {
       assume(new Date()).is.date();
 
@@ -1062,7 +1070,7 @@ describe('Assertions', function assertions() {
     if (global.Float32Array) it('.float32arrays', function (next) {
       assume(new Float32Array(2)).is.float32array();
 
-      try { assume([]).is.float32array() }
+      try { assume([]).is.float32array(); }
       catch (e) { next(); }
     });
 
