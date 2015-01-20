@@ -128,11 +128,10 @@ function format() {
  *
  * Flags:
  *
- * - **untrue**: Assert for a false instead of true.
- * - **deeply**:  Ensure a deep match of the given object.
  * - **stacktrace**: Include stacktrace in the assertion.
  * - **diff**: Attempt to show the difference in object/values so we know why
  *   the assertion failed.
+ * - **sliceStack**: The amount of stacks we should slice off errors messages.
  *
  * @constructor
  * @param {Mixed} value Value we need to assert.
@@ -182,8 +181,8 @@ Assert.config = {
  * @public
  */
 Assert.flags = {
-  untrue: 'doesnt, not, dont',
-  deeply: 'deep'
+  _not: 'doesnt, not, dont',
+  _deep: 'deep, deeply, strict, strictly'
 };
 
 /**
@@ -588,7 +587,7 @@ Assert.add('match, matches', function test(regex, msg) {
 Assert.add('equal, equals, eq, eqs, exactly', function equal(thing, msg) {
   var expect = format('`%j` to @ equal (===) `%j`', this.value, thing);
 
-  if (!this.deeply) return this.test(this.value === thing, msg, expect);
+  if (!this._deep) return this.test(this.value === thing, msg, expect);
 
   this.sliceStack++;
   return this.eql(thing, msg);
@@ -623,7 +622,7 @@ Assert.add('either', function either(args, msg) {
     , values = [];
 
   while (i-- || result) {
-    if (!this.deeply) result = this.value === args[i];
+    if (!this._deep) result = this.value === args[i];
     else result = deep(this.value, args[i]);
     if (result) break;
 
@@ -669,7 +668,7 @@ Assert.add('isFinite, finite, finiteness', function finite(msg) {
   var expect = format('`%j`s @ a is a finite number')
     , result;
 
-  if (this.deeply) result = Number.isFinite(this.value);
+  if (this._deep) result = Number.isFinite(this.value);
   else result = isFinite(this.value);
 
   return this.test(result, msg, expect);
@@ -737,13 +736,13 @@ Assert.add('clone', function clone(value) {
 Assert.add('test', function test(passed, msg, expectation, slice) {
   called++; // Needed for tracking the amount of executed assertions.
 
-  if (this.untrue) passed = !passed;
+  if (this._not) passed = !passed;
   if (passed) return this;
 
   msg = msg || 'Unknown assertation failure occured';
   slice = slice || this.sliceStack;
 
-  if (expectation) msg += ', assumed ' + expectation(this.untrue);
+  if (expectation) msg += ', assumed ' + expectation(this._not);
 
   var failure = new Error(msg)
     , err = { message: failure.message, stack: '' };
