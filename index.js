@@ -839,7 +839,7 @@ Assert.use = function use(plugin) {
 each(('new String§new Number§new Array§new Date§new Error§new RegExp§new Boolean§'
   + 'new Float32Array§new Float64Array§new Int16Array§new Int32Array§new Int8Array§'
   + 'new Uint16Array§new Uint32Array§new Uint8Array§new Uint8ClampedArray§'
-  + 'new ParallelArray§new Map§new Set§new WeakMap§new WeakSet§new TypedArray(1)§',
+  + 'new ParallelArray§new Map§new Set§new WeakMap§new WeakSet§new TypedArray(1)§'
   + 'new DataView(new ArrayBuffer(1))§new ArrayBuffer(1)§new Promise(function(){})§'
   + 'new Blob§arguments§null§undefined§new Buffer(1)§NaN§navigator§location§'
   + 'new Function§new Proxy({}, function(){})§Symbol("assume")§Math'
