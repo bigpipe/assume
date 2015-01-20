@@ -1201,6 +1201,59 @@ describe('Assertions', function assertions() {
         });
       });
     });
+
+    describe('.format', function () {
+      it('returns a function', function (next) {
+        assume.use(function (ass, helper) {
+          var fn = helper.format('foo');
+
+          assume(fn).is.a('function');
+          assume(fn()).equals('foo');
+
+          next();
+        });
+      });
+
+      it('it replaces the @ with not', function (next) {
+        assume.use(function (ass, helper) {
+          var fn = helper.format('i am @ an idiot')
+            , fnn = helper.format('i am @ an idiot');
+
+          assume(fn(false)).equals('i am an idiot');
+          assume(fnn(true)).equals('i am not an idiot');
+
+          next();
+        });
+      });
+
+      it('understands the patterns', function (next) {
+        assume.use(function foo(ass, helper) {
+          assume(helper.format('hi %d', 1)()).equals('hi 1');
+          assume(helper.format('hi %% %d', 1)()).equals('hi % 1');
+          assume(helper.format('hi %s', 'foo')()).equals('hi foo');
+          assume(helper.format('hi %f', foo)()).equals('hi foo');
+          assume(helper.format('hi %f')()).equals('hi %f');
+          assume(helper.format('hi %a')(1)).equals('hi %a');
+
+          var obj = { hello: 1 };
+          assume(helper.format('hi %j', obj)()).equals('hi { hello: 1 }');
+
+          if (Object.defineProperty) {
+            Object.defineProperty(obj, 'throws', {
+              get: function () {
+                throw new Error('pew pew');
+              },
+              enumerable: true, configurable: true,
+              set: function () {}
+            });
+
+            assume(helper.format('hi %j', obj)()).equals('hi <error was thrown: pew pew>');
+          }
+
+          next();
+        });
+      });
+    });
   });
 });
 

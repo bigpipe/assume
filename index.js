@@ -94,8 +94,8 @@ function format() {
     , i = 0;
 
   return function compile(not) {
-    if (not) expectation = expectation.replace(/\@/g, 'not');
-    else expectation = expectation.replace(/\@\s/g, '');
+    if (not) expectation = expectation.replace(/@/g, 'not');
+    else expectation = expectation.replace(/@\s/g, '');
 
     return expectation.replace(/%[sdjf%]/g, function replace(char) {
       if (i >= length) return char;
