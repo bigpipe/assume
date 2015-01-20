@@ -1145,6 +1145,62 @@ describe('Assertions', function assertions() {
         next();
       });
     });
+
+    describe('.each', function () {
+      it('iterates over arrays', function (next) {
+        next = assume.plan(10, next);
+
+        assume.use(function (ass, helper) {
+          helper.each([1,2,3,4,5,6,7,8,9,10], function (nr, i) {
+            assume(nr).is.a('number');
+          });
+
+          next();
+        });
+      });
+
+      it('can break out of a array#each', function (next) {
+        next = assume.plan(1, next);
+
+        assume.use(function (ass, helper) {
+          helper.each([1,2,3,4,5,6,7,8,9,10], function (nr, i) {
+            assume(nr).is.a('number');
+
+            return false;
+          });
+
+          next();
+        });
+      });
+
+      it('iterates over objects', function (next) {
+        next = assume.plan(2, next);
+
+        assume.use(function (ass, helper) {
+          helper.each({foo: 'bar'}, function (value, key) {
+            assume(value).equals('bar');
+            assume(key).equals('foo');
+          });
+
+          next();
+        });
+      });
+
+      it('can break out of a object#each', function (next) {
+        next = assume.plan(2, next);
+
+        assume.use(function (ass, helper) {
+          helper.each({foo: 'bar', hello: 'world'}, function (value, key) {
+            assume(value).equals('bar');
+            assume(key).equals('foo');
+
+            return false;
+          });
+
+          next();
+        });
+      });
+    });
   });
 });
 
