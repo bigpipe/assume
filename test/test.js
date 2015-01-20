@@ -78,7 +78,7 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.String) it('classifies strings', function (next) {
+    it('classifies strings', function (next) {
       assume(String('foo')).to.be.a('string');
       assume('string').to.be.a('string');
 
@@ -86,7 +86,7 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.Number) it('classifies numbers', function (next) {
+    it('classifies numbers', function (next) {
       assume(Number('0.1')).to.be.a('number');
       assume(0).to.be.a('number');
 
@@ -94,7 +94,7 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.Array) it('classifies arrays', function (next) {
+    it('classifies arrays', function (next) {
       assume(new Array(99)).to.be.a('array');
       assume([]).to.be.a('array');
 
@@ -102,21 +102,21 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.Date) it('classifies dates', function (next) {
+    it('classifies dates', function (next) {
       assume(new Date()).to.be.a('date');
 
       try { assume('2014/04/04').to.be.a('date'); }
       catch (e) { next(); }
     });
 
-    if (global.Error) it('classifies errors', function (next) {
+    it('classifies errors', function (next) {
       assume(new Error('foo')).to.be.a('error');
 
       try { assume('foo').to.be.a('error'); }
       catch (e) { next(); }
     });
 
-    if (global.RegExp) it('classifies regexps', function (next) {
+    it('classifies regexps', function (next) {
       assume(new RegExp('foo', 'm')).to.be.a('regexp');
       assume(/foo/).to.be.a('regexp');
 
@@ -124,7 +124,7 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.Boolean) it('classifies booleans', function (next) {
+    it('classifies booleans', function (next) {
       assume(Boolean(0)).to.be.a('boolean');
       assume(Boolean(1)).to.be.a('boolean');
       assume(false).to.be.a('boolean');
@@ -1108,7 +1108,7 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
-    if (global.Uint8Array) it('classifies uint8arrays', function (next) {
+    if (global.Uint8Array) it('.uint8arrays', function (next) {
       assume(new Uint8Array()).is.uint8array();
 
       try { assume([]).is.uint8array(); }
