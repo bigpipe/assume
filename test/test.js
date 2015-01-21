@@ -872,6 +872,9 @@ describe('Assertions', function assertions() {
 
     it('support strict mode', function (next) {
       assume(1).is.strict.finite();
+      assume(Infinity).is.not.strict.finite();
+      assume(-Infinity).is.not.strict.finite();
+      assume(NaN).is.not.strict.finite();
 
       try { assume('1').is.strict.finite(); }
       catch (e) { next(); }
