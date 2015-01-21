@@ -668,8 +668,13 @@ Assert.add('isFinite, finite, finiteness', function finite(msg) {
   var expect = format('`%j`s @ a is a finite number')
     , result;
 
-  if (this._deep) result = Number.isFinite(this.value);
-  else result = isFinite(this.value);
+  if (this._deep) {
+    result = Number.isFinite
+    ? Number.isFinite(this.value)
+    : 'number' === type(this.value) && isFinite(this.value);
+  } else {
+    result = isFinite(this.value);
+  }
 
   return this.test(result, msg, expect);
 });
