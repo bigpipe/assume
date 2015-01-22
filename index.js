@@ -862,8 +862,8 @@ each(('new String§new Number§new Array§new Date§new Error§new RegExp§new B
   name = type(arg);
 
   Assert.add(name, function typecheck(msg) {
-    var of = type(this.value)
-      , expect = of +' to @ be an '+ name;
+    var expect = format('`%j` to @ be an %s', this.value, name)
+      , of = type(this.value);
 
     return this.test(of === name, msg, expect, 3);
   });
