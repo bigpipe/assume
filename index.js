@@ -367,7 +367,7 @@ Assert.add('falsely, falsey, falsy', function nope(msg) {
  * @api public
  */
 Assert.add('true', function ok(msg) {
-  var expect = format('`%j` to @ equal (===) true');
+  var expect = format('`%j` to @ equal (===) true', this.value);
 
   return this.test(this.value === true, msg, expect);
 });
@@ -665,7 +665,7 @@ Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
  * @api public
  */
 Assert.add('isFinite, finite, finiteness', function finite(msg) {
-  var expect = format('`%j`s @ a is a finite number')
+  var expect = format('`%j`s @ a is a finite number', this.value)
     , result;
 
   if (this._deep) {
