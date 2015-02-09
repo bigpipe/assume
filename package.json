@@ -42,12 +42,12 @@
   "author": "Arnout Kazemier",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "8.0.x",
+    "browserify": "8.1.x",
     "istanbul": "0.3.x",
     "mocha": "2.1.x",
     "mocha-phantomjs": "3.5.x",
     "phantomjs": "1.9.x",
-    "pre-commit": "0.0.x"
+    "pre-commit": "1.0.x"
   },
   "dependencies": {
     "deep-eql": "0.1.x",
