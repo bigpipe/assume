@@ -186,6 +186,34 @@ Assert.flags = {
 };
 
 /**
+ * Certain assertions can be disabled based on their environment that they are
+ * executing in. This object allows you in spect which of these conditional
+ * assertions are supported.
+ *
+ * @type {Object}
+ * @public
+ */
+Assert.supports = (function detect() {
+  var supports = {};
+
+  try {
+    eval('(function*(){})()');
+    supports.generators = true;
+  } catch (e) {
+    supports.generators = false;
+  }
+
+  try {
+    eval('%GetV8Version()');
+    supports.native = true;
+  } catch (e) {
+    supports.native = false;
+  }
+
+  return supports;
+}(/* Douglas Crockford wants the dog balls inside youtu.be/taaEzHI9xyY#t=2020s */));
+
+/**
  * Assign values to a given thing.
  *
  * @param {Mixed} where Where do the new properties need to be assigned on.
@@ -704,6 +732,60 @@ Assert.add('generator', function generators(msg) {
 
   return this.test(result, msg, expect);
 });
+
+//
+// The following assertions require's v8's allow-natives-syntax flag to be
+// enabled as this allows us to hook in to the more internal parts of the
+// engine. The native syntax is wrapped in a try catch with a new Function
+// construction so the rest of the code will execute when JavaScript engines do
+// not understand the instructions.
+//
+(function v8() {
+  var states = 'void,yes,no,always,never,void,maybe'.split(',')
+    , detect;
+
+  try {
+    detect = new Function('fn', 'args', 'selfie', [
+      'fn.apply(selfie, args);',
+      '%OptimizeFunctionOnNextCall(fn);',
+      'fn.apply(selfie, args);',
+      'return %GetOptimizationStatus(fn);'
+    ].join('\n'));
+  } catch (e) {
+    detect = function optimized() { return 0; };
+  }
+
+  /**
+   * Assert that a given function has reached a certain optimization level.
+   *
+   * @param {String} level Optimization level
+   * @param {Array} args Arguments for the function
+   * @param {Mixed} selfie This context for the function
+   * @param {String} msg Reason of failure
+   * @returns {Assert}
+   * @api public
+   */
+  Assert.add('optimisation, optimization', function optimization(level, args, selfie, msg) {
+    var expect = format('%f to be optimized as %s', this.value, level)
+      , status = states[detect(this.value, args, selfie)];
+
+    return this.test(status === level, msg, expect);
+  });
+
+  /**
+   * Assert that the function is optimized.
+   *
+   * @param {String} msg Reason of failure
+   * @returns {Assert}
+   * @api public
+   */
+  Assert.add('optimized, optimised', function optimized(msg) {
+    var expect = format('%f to be optimized', this.value)
+      , status = states[detect(this.value, [])];
+
+    return this.test(status === 'yes', msg, expect);
+  });
+}());
 
 /**
  * Create a clone of the current assertion instance which has the same
