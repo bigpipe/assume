@@ -6,17 +6,6 @@ if ('undefined' === typeof global) global = (function that() {
   return this;
 }());
 
-//
-// Attempt to detect generator support.
-//
-var generators;
-try {
-  eval('(function*(){})()');
-  generators = true;
-} catch(err){
-  generators =  false;
-}
-
 describe('Assertions', function assertions() {
   'use strict';
 
@@ -885,7 +874,7 @@ describe('Assertions', function assertions() {
   // We need to `eval` this as the `*` in the generator function is seen as
   // invalid syntax in older versions of the language.
   //
-  if (generators) (new Function('describe', 'assume', [
+  if (assume.supports.generators) (new Function('describe', 'assume', [
   "describe('#generators', function () {",
   "  it('correctly identifies a generator', function bar(next) {",
   "    function* foo() {",
