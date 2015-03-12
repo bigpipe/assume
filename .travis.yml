@@ -1,12 +1,9 @@
 language: node_js
 node_js:
   - "0.12"
-  - "0.11"
   - "0.10"
-  - "0.9"
   - "0.8"
-  - "iojs-v1.1"
-  - "iojs-v1.0"
+  - "iojs"
 before_install:
   - "npm install -g npm@2.1.18"
 script:
@@ -16,10 +13,8 @@ after_script:
 matrix:
   fast_finish: true
   allow_failures:
-    - node_js: "0.11"
-    - node_js: "0.9"
-    - node_js: "iojs-v1.1"
-    - node_js: "iojs-v1.0"
+    - node_js: "0.8"
+    - node_js: "iojs"
 notifications:
   irc:
     channels:
