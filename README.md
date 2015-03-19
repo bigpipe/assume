@@ -74,6 +74,7 @@ node module.
 - [i.hope](#ihope)
 - [Planning](#plan)
 - [Plugins](#plugins)
+  - [Publishing](#publishing)
   - [use](#use)
   - [add](#add)
   - [test](#test)
@@ -526,6 +527,12 @@ We've done our best to include a bunch of assertions that should make it easier
 to test your code but it's always possible that we're missing assertions or you
 just want to eliminate repetition in your code. So we've got a plugin interface
 which allows you to extend the `assume` instance with even more assertions.
+
+### Publishing
+
+For the sake of discoverablity ability of your plugins on npm we suggest to either
+suffix or prefix your module with `assume` and adding the `assume` keyword in to
+your keywords list.
 
 ### use
 
