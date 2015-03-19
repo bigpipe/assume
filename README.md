@@ -43,6 +43,7 @@ node module.
 - [Installation](#installation)
 - [Syntax](#syntax)
 - [Configuration](#configuration)
+- [Feature Detection](#feature-detection)
 - [Assertion](#assertion)
   - [a, an](#a-an)
   - [instanceOf, instanceof, inherits, inherit](#instanceof-instanceof-inherits-inherit)
@@ -65,6 +66,8 @@ node module.
   - [eql, eqls](#eql-eqls)
   - [either](#either)
   - [throw, throws, fail, fails](#throw-throws-fail-fails)
+  - [finite, isFinite, finiteness](#finite-isfinite-finiteness)
+  - [generator](#generator)
   - [start, starts, startsWith, startWith](#start-stats-startswith-startwith)
   - [end, ends, endsWith, endWith](#end-ends-endswith-endwith)
   - [closeTo, close, approximately, near](#closeto-close-approximately-near)
@@ -149,6 +152,28 @@ The following options can be configured:
 - **`showDIff`** Show difference between the given and expected values. Defaults
   to `true`.
 
+### Feature Detection
+
+Certain assertions only work in certain JavaScript/EcmaScript environments.
+Things like the `generator` assertions only work in ES6 as the `function *` is
+invalid syntax. The results of the feature detection is publicly stored in the
+`assume.supports` object. You can use this object to add some conditional tests
+to your test suite. The following features are currently detected:
+
+- **generators** Are generators supported in the host environment.
+- **native** Is V8 native syntax supported.
+
+```js
+if (assume.supports.native) {
+  it('does things', function () {
+    ..
+  });
+}
+```
+
+If you are a plugin author, feel free to add your own feature detections to this
+object (as long as you do not override any pre-existing values).
+
 ### Assertion
 
 There are various of assertions available in assume. If you want the failed
@@ -164,8 +189,9 @@ The behaviours of the assertions can be chained using special "flags" or
 
 - `.not`, `.doesnt`, `.dont` Instead of assuming that your assertions assert to
   `true` they will now assert for `false`.
-- `.deep` Instructs the assertions to do a **deep** equal, so it checks if the
-  contents match instead of an `object` it self matches.
+- `.deep`, `.deeply`, `.strict` `.strictly` Instructs the assertions to do a
+  **deep** equal, so it checks if the contents match instead of an `object` it
+  self matches.
 
 For example:
 
@@ -397,6 +423,25 @@ assume(arrow).throws(/failed this city/);
 assume(arrow).throws('failed this city');
 assume(arrow).does.not.throw('your mom');
 assume(function(){}).does.not.throw();
+```
+
+#### finite, isFinite, finiteness
+
+Assert that the given value is finite.
+
+```js
+assume(Infinity).is.finite();
+```
+
+If `deep` assertion style is used it will use the much stricter
+`Number.isFinite` instead of the regular `isFinite` functionality.
+
+#### generator
+
+Assert that the given value is an EcmaScript 6 based generator.
+
+```
+assume(function *() {}).is.generator();
 ```
 
 #### start, starts, startsWith, startWith
