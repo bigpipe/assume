@@ -845,11 +845,17 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   err.stack = err.stack.split('\n').slice(slice).join('\n') || err.stack;
   err.stack = pretty(err);
 
-  if (nodejs) throw err;
+  if ('function' !== typeof Object.create) {
+    if ('object' === typeof console && 'function' === typeof console.error) {
+      console.error(err.stack);
+    }
 
-  if ('object' === typeof console && 'function' === typeof console.error) {
-    console.error(err.stack);
+    throw failure;
   }
+
+  failure = Object.create(Error.prototype);
+  failure.message = err.message;
+  failure.stack = err.stack;
 
   throw failure;
 });
@@ -906,14 +912,14 @@ Assert.plan = function plan(tests, fn) {
 Assert.use = function use(plugin) {
   plugin(this, {
     name: displayName,    // Extract the name of a function.
-    get: pathval.get,     // Get a value from an object.
     string: stringify,    // Transform thing to a string.
+    get: pathval.get,     // Get a value from an object.
     format: format,       // Format an expectation message.
+    nodejs: nodejs,       // Are we running on Node.js.
     deep: deep,           // Deep assertion.
     type: type,           // Get class information.
     size: size,           // Get the size of an object.
-    each: each,           // Iterate over arrays.
-    nodejs: nodejs        // Are we running on Node.js.
+    each: each            // Iterate over arrays.
   });
 
   return Assert;

@@ -42,6 +42,14 @@ describe('Assertions', function assertions() {
     }
   });
 
+  it('throw Error instances', function (next) {
+    try { assume('foo').equals('bar'); }
+    catch (e) {
+      assume(e).is.instanceOf(Error);
+      next();
+    }
+  });
+
   describe('#a', function () {
     it('is aliased as `an`', function () {
       var x = assume('foo');
