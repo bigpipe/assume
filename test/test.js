@@ -896,7 +896,7 @@ describe('Assertions', function assertions() {
   ].join('\n')))(describe, assume);
 
   describe('#approximately', function () {
-    it('is aliased as `throw`, `fail`, `fails`', function () {
+    it('is aliased as `near`, `close`, `closeTo`', function () {
       var x = assume('foo');
 
       if (
