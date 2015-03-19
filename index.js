@@ -744,16 +744,13 @@ Assert.add('generator', function generators(msg) {
   var states = 'void,yes,no,always,never,void,maybe'.split(',')
     , detect;
 
-  try {
-    detect = new Function('fn', 'args', 'selfie', [
-      'fn.apply(selfie, args);',
-      '%OptimizeFunctionOnNextCall(fn);',
-      'fn.apply(selfie, args);',
-      'return %GetOptimizationStatus(fn);'
-    ].join('\n'));
-  } catch (e) {
-    detect = function optimized() { return 0; };
-  }
+  if (!Assert.supports.native) detect = function optimized() { return 0; };
+  else detect = new Function('fn', 'args', 'selfie', [
+    'fn.apply(selfie, args);',
+    '%OptimizeFunctionOnNextCall(fn);',
+    'fn.apply(selfie, args);',
+    'return %GetOptimizationStatus(fn);'
+  ].join('\n'));
 
   /**
    * Assert that a given function has reached a certain optimization level.

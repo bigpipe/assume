@@ -44,6 +44,7 @@ node module.
 - [Syntax](#syntax)
 - [Configuration](#configuration)
 - [Feature Detection](#feature-detection)
+- [Performance Testing](#performance-testing)
 - [Assertion](#assertion)
   - [a, an](#a-an)
   - [instanceOf, instanceof, inherits, inherit](#instanceof-instanceof-inherits-inherit)
@@ -68,6 +69,8 @@ node module.
   - [throw, throws, fail, fails](#throw-throws-fail-fails)
   - [finite, isFinite, finiteness](#finite-isfinite-finiteness)
   - [generator](#generator)
+  - [optimisation, optimization](#optimisation-optimization)
+  - [optimised, optimized](#optimised-optimized)
   - [start, starts, startsWith, startWith](#start-stats-startswith-startwith)
   - [end, ends, endsWith, endWith](#end-ends-endswith-endwith)
   - [closeTo, close, approximately, near](#closeto-close-approximately-near)
@@ -174,6 +177,35 @@ if (assume.supports.native) {
 
 If you are a plugin author, feel free to add your own feature detections to this
 object (as long as you do not override any pre-existing values).
+
+### Performance Testing
+
+The performance testing is only available for environments that use V8 and more
+specifically the `--allow-natives-syntax` flags. These flags can be supplied in
+[chrome before you start browser][flags]. These flags are necessary to get
+access to the V8 internals which expose optimization and de-optimization
+information.
+
+If you are running `iojs` or `node` on the server, you can pass in these flags
+directly:
+
+```
+iojs --allow-natives-syntax
+```
+
+#### Mocha
+
+If you are using `mocha` as test runner you usually add `mocha` as executable.
+But unfortunately, the `mocha` binary doesn't allow you to pass V8 flags. So
+instead of using the `mocha` binary directly you can use the `node` and call the
+`_mocha` binary instead:
+
+```
+node --allow-natives-syntax --harmony ./node_modules/mocha/bin/_mocha test/test.js
+```
+
+You can check if your host environment supports these performance tests by
+checking the `assume.supports.native` variable.
 
 ### Assertion
 
@@ -441,9 +473,22 @@ If `deep` assertion style is used it will use the much stricter
 
 Assert that the given value is an EcmaScript 6 based generator.
 
-```
+```js
 assume(function *() {}).is.generator();
 ```
+
+**Please note that this will only work if Generators are enabled in the host
+environment or you might end up with false positives**
+
+#### optimisation, optimization
+
+**Please see the [Performance Testing](#performance-testing) section information
+to enable these assertions as they require specific V8 flags to be enabled.**
+
+#### optimised, optimized
+
+**Please see the [Performance Testing](#performance-testing) section information
+to enable these assertions as they require specific V8 flags to be enabled.**
 
 #### start, starts, startsWith, startWith
 
@@ -721,3 +766,5 @@ assume.add('something', function somethign(value, msg) {
 ## License
 
 MIT
+
+[flags]: http://www.chromium.org/developers/how-tos/run-chromium-with-flags
