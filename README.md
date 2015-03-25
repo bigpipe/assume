@@ -22,21 +22,21 @@ this.
 
 ## Installation
 
-The module is written with browserify and Node.js in mind and can be installed
-using:
+Assume is written with client and server-side JavaScript in mind and uses the
+commonjs module system to export it self. The library is released in the public
+npm registry and can be installed using:
 
 ```
 npm install --save-dev assume
 ```
 
-The `--save-dev` flag tells `npm` to automatically add this package and it's
-installed version to the `devDependencies` of your module. It's not advised to
-install this as an regular dependency as it was only designed to run in test and
-`throw` errors when assertions fail.
+The `--save-dev` flag tells `npm` to automatically add this `package.json` and it's
+installed version to the `devDependencies` of your module.
 
-A compiled version which does not require browserify is also added in npm
-releases. The compiled file can be found in `dist/assume.js` in the installed
-node module.
+As code is written against the commonjs module system we also ship a standalone
+version in the module which introduces an `assume` global. The standalone
+version can be found in the `dist` folder after installation. The dist file is
+not commited to GitHub.
 
 ## Table of Contents
 
