@@ -663,7 +663,7 @@ describe('Assertions', function assertions() {
   });
 
   describe('#hasOwn', function () {
-    it('is aliased as `lte`, `atmost`', function () {
+    it('is aliased as `own`, `ownProperty`, `haveOwnProperty`, `property`, `owns`, `hasown`', function () {
       var x = assume('aaaabe');
 
       if (
@@ -721,7 +721,7 @@ describe('Assertions', function assertions() {
   });
 
   describe('#equal', function () {
-    it('is aliased as `lte`, `atmost`', function () {
+    it('is aliased as `equals`, `eq`, `eqs`', function () {
       var x = assume('aaaabe');
 
       if (
