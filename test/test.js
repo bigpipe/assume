@@ -685,6 +685,22 @@ describe('Assertions', function assertions() {
       });
     }
 
+    it('checks the property value', function () {
+      var obj = { foo: 'bar' };
+
+      // negative assertion required to make sure the 2nd argument is checked.
+      assume(obj).to.not.hasown('foo', false);
+      assume(obj).to.not.hasown('foo', '');
+      assume(obj).hasown('foo', 'bar');
+    });
+
+    it('can do deep property checks', function () {
+      var obj = { foo: { deep: 'bar' }};
+
+      assume(obj).deep.hasown('foo', { deep: 'bar' });
+      assume(obj).deep.not.hasown('foo', {  different: 'deep' });
+    });
+
     it('only accepts added properties', function (next) {
       var obj = { foo: 'br' };
 
