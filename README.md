@@ -236,7 +236,7 @@ assume({foo:'bar'}).deep.equals({foo:'bar'});
 Let's take a closer look to all assertions that we're supporting:
 
 #### a, an
- 
+
 Asserts if the given value is the correct type. We need to use Object.toString
 here because there are some implementation bugs the `typeof` operator:
 
@@ -401,10 +401,12 @@ assume([1, 213, 13, 94, 5, 6, 7]).is.between(2, 10);
 
 #### hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown
 
-Assert that the value has the specified property.
+Assert that the value has the specified property and optionally
+deeply check its value.
 
 ```js
-assume({foo: bar}).owns('foo');
+assume({foo: 'bar'}).owns('foo');
+assume({foo: 'bar'}).owns('foo', 'bar');
 ```
 
 #### match, matches
