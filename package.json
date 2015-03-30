@@ -1,6 +1,6 @@
 {
   "name": "assume",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
@@ -42,9 +42,9 @@
   "author": "Arnout Kazemier",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "8.1.x",
+    "browserify": "9.0.x",
     "istanbul": "0.3.x",
-    "mocha": "2.1.x",
+    "mocha": "2.2.x",
     "mocha-phantomjs": "3.5.x",
     "phantomjs": "1.9.x",
     "pre-commit": "1.0.x"
