@@ -689,8 +689,8 @@ describe('Assertions', function assertions() {
       var obj = { foo: 'bar' };
 
       // negative assertion required to make sure the 2nd argument is checked.
-      assume(obj).to.not.hasown('foo', false);
-      assume(obj).to.not.hasown('foo', '');
+      assume(obj).to.not.hasown('fool', false);
+      assume(obj).to.not.hasown('fool', 'bar');
       assume(obj).hasown('foo', 'bar');
     });
 

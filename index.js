@@ -583,10 +583,12 @@ Assert.add('within, between', function within(start, finish, msg) {
  * @api public
  */
 Assert.add('hasOwn, own, ownProperty, haveOwnProperty, property, owns, hasown', function has(prop, value, msg) {
-  var expect = format('`%j` @ to have own property %s', this.value, prop);
+  var expect = format('`%j` @ to have own property %s', this.value, prop)
+    , tested = this.test(hasOwn.call(this.value, prop), msg, expect);
 
-  if (value === null || value === undefined) value = this.value[prop];
-  return this.test(hasOwn.call(this.value, prop) && deep(value, this.value[prop]), msg, expect);
+  return arguments.length > 1
+    ? this.clone(this.value[prop]).equals(value)
+    : tested;
 });
 
 /**
