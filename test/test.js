@@ -698,7 +698,7 @@ describe('Assertions', function assertions() {
       var obj = { foo: { deep: 'bar' }};
 
       assume(obj).deep.hasown('foo', { deep: 'bar' });
-      assume(obj).deep.not.hasown('foo', {  different: 'deep' });
+      assume(obj).deep.not.hasown('fool', {  different: 'deep' });
     });
 
     it('only accepts added properties', function (next) {
