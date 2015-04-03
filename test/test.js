@@ -712,6 +712,13 @@ describe('Assertions', function assertions() {
         catch (e) { next(); }
       }
     });
+
+    it('can check against null values in an object', function () {
+      var obj = { _foo: null, _bar: null };
+
+      assume(obj).to.have.property('_foo', null);
+      assume(obj).to.have.property('_bar', null);
+    });
   });
 
   describe('#match', function () {
