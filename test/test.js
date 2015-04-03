@@ -50,6 +50,35 @@ describe('Assertions', function assertions() {
     }
   });
 
+  describe('#csliceStacklone', function () {
+    it('increases slice for each clone', function () {
+      var a = assume('x')
+        , b = a.clone('b');
+
+      a.equals('x');
+      b.equals('b');
+
+      assume(b.sliceStack).to.equal(a.sliceStack + 1);
+      assume(b.clone().sliceStack).to.equal(a.sliceStack + 2);
+    });
+
+    it('defaults to the same value if no clone value is provided', function () {
+      var a = assume('x');
+
+      a.clone().equals('x');
+    });
+
+    it('can clone falsy values', function () {
+      var a = assume('x');
+
+      a.clone('').equals('');
+      a.clone(null).equals(null);
+      a.clone(undefined).equals(undefined);
+      a.clone(false).equals(false);
+      a.clone(0).equals(0);
+    });
+  });
+
   describe('#a', function () {
     it('is aliased as `an`', function () {
       var x = assume('foo');
