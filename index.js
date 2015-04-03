@@ -807,7 +807,7 @@ Assert.add('clone', function clone(value) {
     configuration[alias] = this[alias];
   }
 
-  return new Assert(value || this.value, configuration);
+  return new Assert(arguments.length ? value : this.value, configuration);
 });
 
 /**
