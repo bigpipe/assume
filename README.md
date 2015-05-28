@@ -433,7 +433,7 @@ assume(13424).equals(13424);
 Assert that the given value deeply equals the supplied value.
 
 ```js
-assume([1,2]).equals([1,2]);
+assume([1,2]).eql([1,2]);
 ```
 
 #### either
