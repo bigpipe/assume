@@ -799,7 +799,7 @@ Assert.add('clone', function clone(value) {
   var configuration = {
     stacktrace: this.stacktrace,
     slice: this.sliceStack + 1,
-    diff: this.diff,
+    diff: this.diff
   };
 
   for (var alias in Assert.flags) {
