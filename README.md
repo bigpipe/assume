@@ -233,7 +233,7 @@ assume(false).is.not.true();
 assume({foo:'bar'}).deep.equals({foo:'bar'});
 ```
 
-<a name="#keywords"></a>
+<a name="keywords"></a>
 Now, a special word of caution for those of you who are using this library to
 write cross browser tests. Internet Explorer has issues when you use
 **keywords** as functions. Using the `true()`, `instanceof()` etc. functions to
