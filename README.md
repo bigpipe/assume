@@ -46,6 +46,8 @@ not commited to GitHub.
 - [Feature Detection](#feature-detection)
 - [Performance Testing](#performance-testing)
 - [Assertion](#assertion)
+  - [Keywords](#keywords)
+- [API](#api)
   - [a, an](#a-an)
   - [instanceOf, instanceof, inherits, inherit](#instanceof-instanceof-inherits-inherit)
   - [include, includes, contain, contains](#include-includes-contain-contains)
@@ -233,12 +235,15 @@ assume(false).is.not.true();
 assume({foo:'bar'}).deep.equals({foo:'bar'});
 ```
 
-<a name="keywords" id="keywords"> </a>
+#### Keywords
+
 Now, a special word of caution for those of you who are using this library to
 write cross browser tests. Internet Explorer has issues when you use
 **keywords** as functions. Using the `true()`, `instanceof()` etc. functions to
 assert you will run in to issues. So the rule of thumb here is that if you need
 to do cross browser support do not assert with the keyword based names.
+
+## API
 
 Let's take a closer look to all assertions that we're supporting:
 
