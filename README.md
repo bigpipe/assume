@@ -233,6 +233,13 @@ assume(false).is.not.true();
 assume({foo:'bar'}).deep.equals({foo:'bar'});
 ```
 
+<a name="#keywords"></a>
+Now, a special word of caution for those of you who are using this library to
+write cross browser tests. Internet Explorer has issues when you use
+**keywords** as functions. Using the `true()`, `instanceof()` etc. functions to
+assert you will run in to issues. So the rule of thumb here is that if you need
+to do cross browser support do not assert with the keyword based names.
+
 Let's take a closer look to all assertions that we're supporting:
 
 #### a, an
@@ -248,6 +255,8 @@ eliminates all these edge cases.
 ```js
 assume([]).is.a('array');
 ```
+
+[`instanceof` is a keyword and might cause cross browser issues](#keywords)
 
 #### instanceOf, instanceof, inherits, inherit
 
@@ -301,6 +310,8 @@ Explicitly check that the value is the boolean `true`.
 assume(true).true();
 ```
 
+[`true` is a keyword and might cause cross browser issues](#keywords)
+
 #### false
 
 Explicitly check that the value is the boolean `false`.
@@ -308,6 +319,8 @@ Explicitly check that the value is the boolean `false`.
 ```js
 assume(true).true();
 ```
+
+[`false` is a keyword and might cause cross browser issues](#keywords)
 
 #### exists, exist
 
@@ -459,6 +472,8 @@ assume(arrow).throws('failed this city');
 assume(arrow).does.not.throw('your mom');
 assume(function(){}).does.not.throw();
 ```
+
+[`throw` is a keyword and might cause cross browser issues](#keywords)
 
 #### finite, isFinite, finiteness
 
