@@ -317,7 +317,7 @@ assume(true).true();
 Explicitly check that the value is the boolean `false`.
 
 ```js
-assume(true).true();
+assume(false).false();
 ```
 
 [`false` is a keyword and might cause cross browser issues](#keywords)
