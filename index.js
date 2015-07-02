@@ -816,18 +816,22 @@ Assert.add('clone', function clone(value) {
  * @param {Boolean} passed Didn't the test pass or fail.
  * @param {String} msg Custom message provided by users.
  * @param {String} expectation What the assertion expected.
- * @param {Number} slice The amount of stack traces we need to remove.
+ * @Param {Object} options Additional options.
  * @returns {Assert}
  * @api public
  */
-Assert.add('test', function test(passed, msg, expectation, slice) {
+Assert.add('test', function test(passed, msg, expectation, options) {
   called++; // Needed for tracking the amount of executed assertions.
 
   if (this._not) passed = !passed;
   if (passed) return this;
 
+  //
+  // Create some sane variable defaults.
+  //
   msg = msg || 'Unknown assertation failure occured';
-  slice = slice || this.sliceStack;
+  options = options || {};
+  options.slice = options.slice || this.sliceStack;
 
   if (expectation) msg += ', assumed ' + expectation(this._not);
 
@@ -838,11 +842,14 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
     err.stack = failure.stack || err.stack;
   }
 
+  if (options.actual) err.actual = options.actual;
+  if (options.expected) err.expected = options.expected;
+
   //
   // Clean up the stack by slicing off the parts that are pointless to most
   // people. (Like where it enters this assertion library).
   //
-  err.stack = err.stack.split('\n').slice(slice).join('\n') || err.stack;
+  err.stack = err.stack.split('\n').slice(options.slice).join('\n') || err.stack;
   err.stack = pretty(err);
 
   if ('function' !== typeof Object.create) {
@@ -856,6 +863,9 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   failure = Object.create(Error.prototype);
   failure.message = err.message;
   failure.stack = err.stack;
+
+  if (err.expected) failure.expected = err.expected;
+  if (err.actual) failure.actual = err.actual;
 
   throw failure;
 });
