@@ -874,6 +874,14 @@ describe('Assertions', function assertions() {
       catch (e) { next(); }
     });
 
+    it('fails when nothing is thrown', function (next) {
+      try { assume(pass).throws('cow-dung'); }
+      catch (e) {
+        try { assume(pass).throws(); }
+        catch(e) { return next(); }
+      }
+    });
+
     it('executes non throwing functions', function (next) {
       assume(fail).does.not.throw('hi');
       assume(next).does.not.throw('hi');
