@@ -681,6 +681,7 @@ Assert.add('throw, throws, fails, fail', function throws(thing, msg) {
       case 'string': return this.clone(message).includes(thing, msg);
       case 'regexp': return this.clone(message).matches(thing, msg);
       case 'function': return this.clone(e).instanceOf(thing, msg);
+      case 'undefined': return this.test(true, msg, format('%f to @ throw', this.value));
       default: return this.clone(e).equals(thing);
     }
   }

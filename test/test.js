@@ -878,8 +878,13 @@ describe('Assertions', function assertions() {
       try { assume(pass).throws('cow-dung'); }
       catch (e) {
         try { assume(pass).throws(); }
-        catch(e) { return next(); }
+        catch (e) { return next(); }
       }
+    });
+
+    it('fails when throw is not expected', function (next) {
+      try { assume(fail).to.not.throw(); }
+      catch (e) { next(); }
     });
 
     it('executes non throwing functions', function (next) {
