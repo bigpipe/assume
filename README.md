@@ -78,6 +78,7 @@ not commited to GitHub.
   - [closeTo, close, approximately, near](#closeto-close-approximately-near)
 - [i.hope](#ihope)
 - [Planning](#plan)
+- [Waiting](#wait)
 - [Plugins](#plugins)
   - [Publishing](#publishing)
   - [use](#use)
@@ -587,6 +588,43 @@ for (var i = 0; i < 10; i++) {
 
 next(); // Also throws an error as we've executed 10 assertions instead of 7.
 ```
+
+## Waiting
+
+Writing async tests can be hard, especially if you have to juggle with callbacks
+and wait untill 2 callbacks are completed before you can continue with the test
+suite. The `assume.wait` function helps you with orchestration of tests and
+callbacks. The method accepts 3 arguments:
+
+1. The amount of times the returned callback should be called before calling the
+   supplied callback.
+2. Optionally, the amount of assertions you expect to run. We will wrap the
+   returned callback with `assume.plan` this way.
+3. Completion callback which is called after the callbacks have been called.
+
+The method will return a function that should be used as callback for your async
+tests. It follows an error first callback pattern and instantly calls the
+supplied callback once an error has be passed in as error argument.
+
+```js
+ it('does async things', function (next) {
+   next = assume.wait(2, 4, next);
+
+   asynctask(function (err, data) {
+     assume(err).is.a('undefined');
+     assume(data).equals('testing');
+
+     next();
+   });
+
+   asynctaskfail(function (err, data) {
+     assume(err).is.a('undefined');
+     assume(data).equals('testing');
+
+     next();
+   });
+ });
+ ```
 
 ## Plugins
 

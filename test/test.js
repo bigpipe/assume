@@ -1091,6 +1091,91 @@ describe('Assertions', function assertions() {
     });
   });
 
+  describe('.wait', function () {
+    it('is and returns a function', function () {
+      assume(assume.wait).is.a('function');
+      assume(assume.wait()).is.a('function');
+    });
+
+    it('waits until all callbacks are called', function (next) {
+      next = assume.plan(3, next);
+
+      var called = false
+        , fn;
+
+      fn = assume.wait(2, function meh() {
+        assume(called).is.false();
+        called = true;
+
+        next();
+      });
+
+      setTimeout(function () {
+        assume(called).is.false();
+        fn();
+      }, 10);
+
+      setTimeout(function () {
+        assume(called).is.false();
+        fn();
+      }, 10);
+    });
+
+    it('allows execution greater than the set wait', function (next) {
+      var fn = assume.wait(2, function (err) {
+        assume(err).is.a('undefined');
+
+        fn();
+        fn();
+
+        next();
+      });
+
+      fn();
+      fn();
+      fn();
+    });
+
+    it('calls the supplied callback on the first error passed in', function (next) {
+      var called = false
+        , fn;
+
+      fn = assume.wait(2, function (err) {
+        called = true;
+        assume(err.message).equals('first');
+      });
+
+      setTimeout(function () {
+        assume(called).is.false();
+        fn(new Error('first'));
+      }, 10);
+
+      setTimeout(function () {
+        assume(called).is.true();
+        next();
+      }, 20);
+    });
+
+    it('can plan the assertions in the callbacks', function (next) {
+      var fn = assume.wait(2, 3, function (err) {
+        assume(err).is.a('error');
+        assume(err.message).includes('less assertations than the expected 3');
+
+        next();
+      });
+
+      setTimeout(function () {
+        assume(1).equals(1);
+        fn();
+      }, 10);
+
+      setTimeout(function () {
+        assume(1).equals(1);
+        fn();
+      }, 10);
+    });
+  });
+
   describe('type checks', function () {
     it('.nan', function (next) {
       assume(NaN).is.nan();

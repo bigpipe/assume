@@ -868,7 +868,7 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
  *
  * ```js
  * it('run a lot of assertions', function (next) {
- *   next = assume.run(10, next);
+ *   next = assume.plan(10, next);
  * });
  * ```
  *
@@ -900,6 +900,59 @@ Assert.plan = function plan(tests, fn) {
     ];
 
     fn(new Error(msg.join(' ')));
+  };
+};
+
+/**
+ * Wait until the returned callback is called x times before advancing. This
+ * makes it a bit easier to write async tests that require multiple callbacks.
+ *
+ * ```js
+ * it('does async things', function (next) {
+ *   next = assume.wait(2, 4, next);
+ *
+ *   asynctask(function (err, data) {
+ *     assume(err).is.a('undefined');
+ *     assume(data).equals('testing');
+ *
+ *     next();
+ *   });
+ *
+ *   asynctaskfail(function (err, data) {
+ *     assume(err).is.a('undefined');
+ *     assume(data).equals('testing');
+ *
+ *     next();
+ *   });
+ * });
+ * ```
+ *
+ * @param {Number} calls The amount of calls the returned callback should called.
+ * @param {Number} tests The amount of tests that should be completed before cb.
+ * @param {Function} fn Completion callback.
+ * @returns {Function} New function that does the counting.
+ * @api public
+ */
+Assert.wait = function wait(calls, tests, fn) {
+  //
+  // Make the `tests` argument optional by allowing callback to be used there.
+  //
+  if ('function' === typeof tests) {
+    fn = tests;
+    tests = 0;
+  }
+
+  //
+  // If `tests` are specified, pass it directly in to the Assert.plan function
+  // so we can use that as given callback.
+  //
+  if (tests) fn = Assert.plan(tests, fn);
+
+  var ignore = false;
+
+  return function counter(err) {
+    if (ignore) return;
+    if (err || !--calls) return ignore = true, fn(err);
   };
 };
 
