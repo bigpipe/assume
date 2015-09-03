@@ -728,8 +728,10 @@ Assert.add('generator', function generators(msg) {
   //
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/isGenerator
   //
-  if ('function' === this.value.isGenerator) {
+  if ('function' === typeof this.value.isGenerator) {
     result = this.value.isGenerator();
+  } else if ('generatorfunction' === type(this.value)) {
+    result = true;
   } else {
     result = 'function' === type(this.value) && this.value.toString().indexOf('function*') === 0;
   }
