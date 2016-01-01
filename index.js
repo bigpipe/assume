@@ -818,7 +818,7 @@ Assert.add('clone', function clone(value) {
  *
  * @param {Boolean} passed Didn't the test pass or fail.
  * @param {String} msg Custom message provided by users.
- * @param {String} expectation What the assertion expected.
+ * @param {Function} expectation Compiled expectation template
  * @param {Number} slice The amount of stack traces we need to remove.
  * @returns {Assert}
  * @api public
