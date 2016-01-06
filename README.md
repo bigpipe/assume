@@ -762,7 +762,7 @@ _the_ most important method of all. It accepts the following arguments:
 
 - `passed`, a boolean which indicates if the assertion failed or passed.
 - `msg`, a string which is the reason or message provided by the users.
-- `expectation`, a string which explains what the assertion expected.
+- `expectation`, a compiled template which explains what the assertion expected.
 - `slice`, a number which slices of stacks from the stack trace. This is keeps
   the stack trace clear of all references to our own assertion library and only
   contains the part of the test/suite where the assertion was initiated. This
@@ -773,7 +773,8 @@ If the `assertion` passes the method will return it self, or it will throw.
 
 ```js
 assume.add('true', function (msg) {
-  return this.test(this.value === true, msg, 'value to @ be true');
+  var expectation = format('value to @ be true');
+  return this.test(this.value === true, msg, expectation);
 });
 ```
 
