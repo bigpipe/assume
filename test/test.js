@@ -297,6 +297,17 @@ describe('Assertions', function assertions() {
       try { assume(arr).includes(7); }
       catch (e) { next(); }
     });
+
+    it('can deeply check array values', function () {
+      var arr = [{
+        one: 1
+      }, {
+        two: 2
+      }];
+
+      assume(arr).deep.includes({ one: 1 });
+      assume(arr).deep.includes({ two: 2 });
+    });
   });
 
   describe('#ok', function () {
