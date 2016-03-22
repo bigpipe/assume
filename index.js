@@ -338,7 +338,7 @@ Assert.add('include, includes, contain, contains', function contain(val, msg) {
   switch (of) {
     case 'array':
       for (var i = 0, length = this.value.length; i < length; i++) {
-        if (val === this.value[i]) {
+        if (this._deep ? deep(this.value[i], val) : this.value[i] === val) {
           includes = true;
           break;
         }
