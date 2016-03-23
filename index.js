@@ -4,13 +4,13 @@ var stringify = require('object-inspect')
   , pretty = require('prettify-error')
   , displayName = require('fn.name')
   , pathval = require('pathval')
-  , nodejs = require('is-node')
   , deep = require('deep-eql');
 
 var undefined
   , called = 0
   , toString = Object.prototype.toString
-  , hasOwn = Object.prototype.hasOwnProperty;
+  , hasOwn = Object.prototype.hasOwnProperty
+  , nodejs = !!(typeof process != 'undefined' && process.versions && process.versions.node);
 
 /**
  * Get class information for a given type.
