@@ -1,7 +1,7 @@
 'use strict';
 
 var stringify = require('object-inspect')
-  , pretty = require('prettify-error')
+  , pruddy = require('pruddy-error')
   , displayName = require('fn.name')
   , pathval = require('pathval')
   , deep = require('deep-eql');
@@ -846,7 +846,7 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   // people. (Like where it enters this assertion library).
   //
   err.stack = err.stack.split('\n').slice(slice).join('\n') || err.stack;
-  err.stack = pretty(err);
+  err.stack = pruddy(err);
 
   if ('function' !== typeof Object.create) {
     if ('object' === typeof console && 'function' === typeof console.error) {
