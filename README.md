@@ -272,7 +272,7 @@ Asserts if the given value is one of the acceptable types.
 The same caveats regarding `typeof` apply as described in [a, an](#a-an).
 
 ```js
-assume([]).is.oneOfType(['array'], ['string']);
+assume([]).is.oneOfType(['array', string']);
 ```
 
 #### instanceOf, instanceof, inherits, inherit
