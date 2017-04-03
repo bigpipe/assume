@@ -49,6 +49,7 @@ not commited to GitHub.
   - [Keywords](#keywords)
 - [API](#api)
   - [a, an](#a-an)
+  - [eitherOfType, oneOfType](#eitheroftype-oneoftype)
   - [instanceOf, instanceof, inherits, inherit](#instanceof-instanceof-inherits-inherit)
   - [include, includes, contain, contains](#include-includes-contain-contains)
   - [ok, okay, truthy, truely](#ok-okay-truthy-truely)
@@ -263,6 +264,16 @@ assume([]).is.a('array');
 ```
 
 [`instanceof` is a keyword and might cause cross browser issues](#keywords)
+
+#### eitherOfType, oneOfType
+
+Asserts if the given value is one of the acceptable types.
+
+The same caveats regarding `typeof` apply as described in [a, an](#a-an).
+
+```js
+assume([]).is.oneOfType(['array', 'string']);
+```
 
 #### instanceOf, instanceof, inherits, inherit
 

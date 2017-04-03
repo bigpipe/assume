@@ -309,6 +309,30 @@ Assert.add('a, an', function typecheck(of, msg) {
 });
 
 /**
+ * Asserts if the given value is the correct type from a list of types.
+ * The same caveats regarding `typeof` apply as described in `a`, `an`.
+ * 
+ * @param {String[]} ofs Acceptable types to check against
+ * @param {String} msg Reason of failure.
+ * @returns {Assert}
+ * @api public
+ */
+Assert.add('eitherOfType, oneOfType', function multitypecheck(ofs, msg) {
+  var value = type(this.value)
+    , expect = format('`%j` (%s) to @ be a %s', this.value, value, ofs.join(' or a '));
+
+  var test = false;
+  for (var i = 0; i < ofs.length; i++) {
+    if (ofs[i].toString().toLowerCase() === value) {
+      test = true;
+      break;
+    }
+  }
+  
+  return this.test(test, msg, expect);
+});
+
+/**
  * Asserts that the value is instanceof the given constructor.
  *
  * @param {Function} constructor Constructur the value should inherit from.

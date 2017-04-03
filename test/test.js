@@ -235,6 +235,28 @@ describe('Assertions', function assertions() {
     });
   });
 
+  describe('#eitherOfType', function () {
+    it('is aliased as `eitherOfType`, `oneOfType`', function () {
+      var x = assume('foo');
+
+      if (x.eitherOfType !== x.oneOfType) throw new Error('Incorrectly aliased');
+    });
+
+    it('classifies a valid type', function (next) {
+      assume([]).to.be.eitherOfType(['string', 'array']);
+
+      try { assume({}).to.be.eitherOfType(['string', 'array']); }
+      catch (e) { next(); }
+    });
+
+    it('supports negation properly', function (next) {
+      assume([]).to.not.be.eitherOfType(['string', 'object'])
+
+      try { assume({}).to.not.be.eitherOfType(['string', 'object']); }
+      catch (e) { next(); }
+    });
+  });
+
   describe('#instanceof', function () {
     function Foo() {}
     function Bar() {}
