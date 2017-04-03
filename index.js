@@ -321,19 +321,11 @@ Assert.add('eitherOfType, oneOfType', function multitypecheck(ofs, msg) {
   var value = type(this.value)
     , expect = format('`%j` (%s) to @ be a %s', this.value, value, ofs.join(' or a '));
 
-  var test;
-  if (typeof ofs.some === 'function') {
-    test = ofs.some(function(of) {
-      of = of.toString().toLowerCase();
-      return of === value;
-    });
-  } else {
-    test = false;
-    for (var i = 0; i < ofs.length; i++) {
-      if (ofs[i].toString().toLowerCase() === value) {
-        test = true;
-        break;
-      }
+  var test = false;
+  for (var i = 0; i < ofs.length; i++) {
+    if (ofs[i].toString().toLowerCase() === value) {
+      test = true;
+      break;
     }
   }
   

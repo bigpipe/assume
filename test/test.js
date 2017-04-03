@@ -255,18 +255,6 @@ describe('Assertions', function assertions() {
       try { assume({}).to.not.be.eitherOfType(['string', 'object']); }
       catch (e) { next(); }
     });
-
-    it('works without `Array.prototype.some`', function (next) {
-      var foo = ['string', 'object'];
-
-      // Override foo.some so we fallback to linear search
-      foo.some = null;
-
-      assume({}).to.be.eitherOfType(foo);
-
-      try { assume(1).to.be.eitherOfType(foo); }
-      catch (e) { next(); }
-    });
   });
 
   describe('#instanceof', function () {
