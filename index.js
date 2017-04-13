@@ -311,7 +311,7 @@ Assert.add('a, an', function typecheck(of, msg) {
 /**
  * Asserts if the given value is the correct type from a list of types.
  * The same caveats regarding `typeof` apply as described in `a`, `an`.
- * 
+ *
  * @param {String[]} ofs Acceptable types to check against
  * @param {String} msg Reason of failure.
  * @returns {Assert}
@@ -328,7 +328,7 @@ Assert.add('eitherOfType, oneOfType', function multitypecheck(ofs, msg) {
       break;
     }
   }
-  
+
   return this.test(test, msg, expect);
 });
 
@@ -864,6 +864,15 @@ Assert.add('test', function test(passed, msg, expectation, slice) {
   if (this.stacktrace) {
     err.stack = failure.stack || err.stack;
   }
+
+  //
+  // Pre-scrub, it's possible that the error message is a multi line error
+  // message and that really messes up the slicing of the call stack, to prevent
+  // this from happening, we're just going to replace the error message that is
+  // on the stack with a single line as we use the `err.message` instead of the
+  // message that is in the stack anyways.
+  //
+  err.stack = err.stack.replace(err.message, 'assume-replaced-the-err-message');
 
   //
   // Clean up the stack by slicing off the parts that are pointless to most
