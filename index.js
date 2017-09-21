@@ -459,9 +459,10 @@ Assert.add('exists, exist', function exists(msg) {
  * @api public
  */
 Assert.add('length, lengthOf, size', function length(value, msg) {
-  var expect = format('`%j` to @ have a length of %d', this.value, value);
+  var actualValue = size(this.value);
+  var expect = format('`%j` to @ have a length of %d, found %d', this.value, value, actualValue);
 
-  return this.test(size(this.value) === +value, msg, expect);
+  return this.test(actualValue === +value, msg, expect);
 });
 
 /**
