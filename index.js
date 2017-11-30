@@ -3,7 +3,8 @@
 var stringify = require('object-inspect')
   , pruddy = require('pruddy-error')
   , displayName = require('fn.name')
-  , pathval = require('pathval')
+  , isBuffer = require('is-buffer')
+  , propget = require('propget')
   , deep = require('deep-eql');
 
 var undefined
@@ -20,7 +21,7 @@ var undefined
  * @api private
  */
 function type(of) {
-  if (Buffer.isBuffer(of)) return 'buffer';
+  if (isBuffer(of)) return 'buffer';
   if (of === undefined) return 'undefined';
   if (of === null) return 'null';
   if (of !== of) return 'nan';
@@ -1003,7 +1004,7 @@ Assert.use = function use(plugin) {
   plugin(this, {
     name: displayName,    // Extract the name of a function.
     string: stringify,    // Transform thing to a string.
-    get: pathval.get,     // Get a value from an object.
+    get: propget,         // Get a value from an object.
     format: format,       // Format an expectation message.
     nodejs: nodejs,       // Are we running on Node.js.
     deep: deep,           // Deep assertion.
