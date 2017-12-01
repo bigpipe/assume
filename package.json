@@ -48,7 +48,7 @@
     "fn.name": "1.x.x",
     "is-buffer": "1.x.x",
     "object-inspect": "1.x.x",
-    "propget": "^1.1.0",
-    "pruddy-error": "1.x.x"
+    "propget": "1.x.x",
+    "pruddy-error": "2.x.x"
   }
 }
