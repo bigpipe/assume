@@ -44,11 +44,11 @@
     "pre-commit": "1.x.x"
   },
   "dependencies": {
-    "deep-eql": "3.x.x",
-    "fn.name": "1.x.x",
-    "is-buffer": "1.x.x",
-    "object-inspect": "1.x.x",
-    "propget": "1.x.x",
-    "pruddy-error": "2.x.x"
+    "deep-eql": "^3.0.1",
+    "fn.name": "^1.0.1",
+    "is-buffer": "^2.0.0",
+    "object-inspect": "^1.5.0",
+    "propget": "^1.1.0",
+    "pruddy-error": "^2.0.2"
   }
 }
