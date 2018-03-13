@@ -229,8 +229,14 @@ Assume.registry = {};
  * @public
  */
 Assume.register = function register(file, source) {
-  Assume.registry[file] = source;
-
+  if ('object' === type(file)) {
+    each(file, function iterate(value, key) {
+      Assume.register(key, value);
+    });
+  } else {
+    Assume.registry[file] = source;
+  }
+  
   return Assume;
 };
 
