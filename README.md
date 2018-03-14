@@ -77,6 +77,8 @@ not commited to GitHub.
   - [start, starts, startsWith, startWith](#start-stats-startswith-startwith)
   - [end, ends, endsWith, endWith](#end-ends-endswith-endwith)
   - [closeTo, close, approximately, near](#closeto-close-approximately-near)
+  - [rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync](#rejected-rejects-throwasync-throwsasync-failasync-failsasync)
+  - [resolveSync, resolvesSync, resolvedSync, completeSync, completesSync, completedSync](#resolvesync-resolvessync-resolvedsync-completesync-completessync-completedsync)
 - [i.hope](#ihope)
 - [Planning](#planning)
 - [Waiting](#waiting)
@@ -562,6 +564,24 @@ i.expect.that('foo').is.a('string');
 i.assume.that('foo').equals('bar');
 i.sincerely.hope.that('foo').is.a('string');
 ```
+
+### rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync
+
+Assert that the `thenable` results in a rejected state.
+
+```js
+await assume(thisFunctionAsyncThrows()).to.throwAsync();
+```
+
+### resolveSync, resolvesSync, resolvedSync, completeSync, completesSync, completedSync
+
+Assert that the `thenable` completed and the result was filled synchronously.
+
+```js
+await assume(thisFuncCompletesSynchronously()).to.completeSync();
+```
+
+> Note that `Promise` always complete asynchronously even if it's already in a resolved or rejected state.
 
 ## Planning
 
