@@ -7,6 +7,10 @@ node_js:
   - "6"
   - "8"
   - "9"
+matrix:
+  allow_failures:
+     - node_js: "0.8"
+     - node_js: "0.10"
 script:
   - "npm run test-travis"
 after_script:
