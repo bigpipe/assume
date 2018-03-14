@@ -9,7 +9,7 @@ if ('undefined' === typeof global) global = (function that() {
 describe('Assertions', function assertions() {
   'use strict';
 
-  var assume = require('../');
+  var assume = require('./');
 
   if ('stackTraceLimit' in Error) it('can configure the amount stacks to slice off', function (next) {
     Error.stackTraceLimit = 5;
@@ -1511,7 +1511,7 @@ describe('Assertions', function assertions() {
 describe('i', function () {
   'use strict';
 
-  var i = require('../');
+  var i = require('./');
 
   describe('.hope', function () {
     describe('.that', function () {
@@ -1543,7 +1543,7 @@ describe('i', function () {
 describe('github issues', function () {
   'use strict';
 
-  var assume = require('../');
+  var assume = require('./');
 
   if (Object.defineProperty) describe('#2', function () {
     it('does not throw errors when unspecified properties are accessed', function (next) {

@@ -4,15 +4,11 @@
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
   "scripts": {
-    "browserify-tests": "browserify test/test.js -o test/phantom.js --debug",
-    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --reporter spec --ui bdd test/test.js",
-    "phantom": "mocha-phantomjs test/phantom.html",
-    "prepublish": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
-    "node": "node --allow-natives-syntax --harmony ./node_modules/mocha/bin/_mocha test/test.js",
-    "iojs": "iojs --allow-natives-syntax --harmony ./node_modules/mocha/bin/_mocha test/test.js",
-    "test": "npm run-script browserify-tests && npm run-script phantom",
-    "test-travis": "npm run node && istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd test/test.js",
-    "watch": "mocha --watch --reporter spec --ui bdd test/test.js"
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --reporter spec --ui bdd test.js",
+    "prepublishOnly": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
+    "node": "node --allow-natives-syntax --harmony ./node_modules/mocha/bin/_mocha test.js",
+    "test": "mocha test.js",
+    "test-travis": "npm run node && istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd test.js"
   },
   "repository": {
     "type": "git",
@@ -42,27 +38,17 @@
   "author": "Arnout Kazemier",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "9.0.x",
-    "istanbul": "0.3.x",
-    "mocha": "2.2.x",
-    "mocha-phantomjs": "3.5.x",
-    "phantomjs": "1.9.x",
-    "pre-commit": "1.0.x"
+    "browserify": "14.x.x",
+    "istanbul": "0.4.x",
+    "mocha": "5.x.x",
+    "pre-commit": "1.x.x"
   },
   "dependencies": {
-    "deep-eql": "0.1.x",
-    "fn.name": "1.0.x",
-    "object-inspect": "1.0.x",
-    "pathval": "0.1.x",
-    "pruddy-error": "1.0.x"
-  },
-  "testling": {
-    "harness": "mocha-bdd",
-    "files": "test/test.js",
-    "browsers": [
-      "ie/6..latest",
-      "chrome/latest",
-      "firefox/latest"
-    ]
+    "deep-eql": "^3.0.1",
+    "fn.name": "^1.0.1",
+    "is-buffer": "^2.0.0",
+    "object-inspect": "^1.5.0",
+    "propget": "^1.1.0",
+    "pruddy-error": "^2.0.2"
   }
 }
