@@ -1121,7 +1121,8 @@ each(('new String§new Number§new Array§new Date§new Error§new RegExp§new B
   + 'new ParallelArray§new Map§new Set§new WeakMap§new WeakSet§new TypedArray(1)§'
   + 'new DataView(new ArrayBuffer(1))§new ArrayBuffer(1)§new Promise(function(){})§'
   + 'new Blob§arguments§null§undefined§new Buffer(1)§NaN§navigator§location§'
-  + 'new Function§new Proxy({}, function(){})§Symbol("assume")§Math'
+  + 'new Function§new Proxy({}, function(){})§Symbol("assume")§Math§async function () {}§'
+  + 'WebAssembly'
 ).split('§'), function iterate(code) {
   var name, arg;
 
