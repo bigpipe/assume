@@ -7,7 +7,7 @@
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --reporter spec --ui bdd test.js",
     "prepublishOnly": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
     "node": "node --allow-natives-syntax --harmony ./node_modules/mocha/bin/_mocha test.js",
-    "test": "mochify test.js",
+    "test": "mocha test.js",
     "test-travis": "npm run node && istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd test.js"
   },
   "repository": {
@@ -40,7 +40,7 @@
   "devDependencies": {
     "browserify": "14.x.x",
     "istanbul": "0.4.x",
-    "mochify": "4.x.x",
+    "mocha": "5.x.x",
     "pre-commit": "1.x.x"
   },
   "dependencies": {
