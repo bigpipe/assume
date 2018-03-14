@@ -797,31 +797,29 @@ Assume.add('generator', function generators(msg) {
  * @param {String} msg Reason of failure.
  * @api public
  */
-Assume.add(
-  'rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync',
-  function rejects(msg) {
-    const expectation = format('Thenable did @ end in a rejected state');
-    const value = typeof this.value == 'function' ? this.value() : this.value;
+Assume.add('rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync', function rejects(msg) {
+  const expectation = format('Thenable did @ end in a rejected state');
+  const value = typeof this.value == 'function' ? this.value() : this.value;
 
-    const test = (success, resolveValue, resolve, reject) => {
-      try {
-        this.test(success, msg, expectation);
-        resolve(resolveValue);
-      } catch (ex) {
-        reject(ex);
-      }
-    };
+  const test = (success, resolveValue, resolve, reject) => {
+    try {
+      this.test(success, msg, expectation);
+      resolve(resolveValue);
+    } catch (ex) {
+      reject(ex);
+    }
+  };
 
-    return {
-      then(resolve, reject) {
-        value.then(s => {
-          test(false, s, resolve, reject);
-        }, r => {
-          test(true, r, resolve, reject);
-        });
-      }
-    };
-  });
+  return {
+    then(resolve, reject) {
+      value.then(s => {
+        test(false, s, resolve, reject);
+      }, r => {
+        test(true, r, resolve, reject);
+      });
+    }
+  };
+});
 
 /**
  * Assert if the given thenable/async function completed and a result filled synchronously
@@ -829,35 +827,33 @@ Assume.add(
  * @param {String} msg Reason of failure
  * @api public
  */
-Assume.add(
-  'resolveSync, resolvesSync, resolvedSync, completeSync, completesSync, completedSync',
-  function completedSync(msg) {
-    const expectation = format('Thenable did @ complete synchronously');
-    const value = typeof this.value == 'function' ? this.value() : this.value;
-    const test = this.test.bind(this);
+Assume.add('resolveSync, resolvesSync, resolvedSync, completeSync, completesSync, completedSync', function completedSync(msg) {
+  const expectation = format('Thenable did @ complete synchronously');
+  const value = typeof this.value == 'function' ? this.value() : this.value;
+  const test = this.test.bind(this);
 
-    return {
-      then(resolve, reject) {
-        let completed = false;
-        let resolveValue;
+  return {
+    then(resolve, reject) {
+      let completed = false;
+      let resolveValue;
 
-        value.then(s => {
-          resolveValue = s;
-          completed = true;
-        }, r => {
-          resolveValue = r;
-          completed = true;
-        });
+      value.then(s => {
+        resolveValue = s;
+        completed = true;
+      }, r => {
+        resolveValue = r;
+        completed = true;
+      });
 
-        try {
-          test(completed, msg, expectation);
-          resolve(resolveValue);
-        } catch (ex) {
-          reject(ex);
-        }
+      try {
+        test(completed, msg, expectation);
+        resolve(resolveValue);
+      } catch (ex) {
+        reject(ex);
       }
-    };
-  });
+    }
+  };
+});
 
 //
 // The following assertions require's v8's allow-natives-syntax flag to be
