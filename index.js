@@ -811,7 +811,7 @@ Assume.add('rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync', 
   };
 
   return {
-    then(resolve, reject) {
+    then: function then(resolve, reject) {
       value.then(s => {
         test(false, s, resolve, reject);
       }, r => {
@@ -833,7 +833,7 @@ Assume.add('resolveSync, resolvesSync, resolvedSync, completeSync, completesSync
   const test = this.test.bind(this);
 
   return {
-    then(resolve, reject) {
+    then: function then(resolve, reject) {
       let completed = false;
       let resolveValue;
 
