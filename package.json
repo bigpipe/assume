@@ -8,7 +8,7 @@
     "prepublishOnly": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
     "node": "node --allow-natives-syntax --harmony ./node_modules/mocha/bin/_mocha ./test/*.test.js",
     "test": "mocha ./test/*.test.js",
-    "test-travis": "npm run node && istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd ./*.test.js"
+    "test-travis": "npm run node && istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter spec --ui bdd ./test/*.test.js"
   },
   "repository": {
     "type": "git",
