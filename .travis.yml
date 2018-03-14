@@ -1,6 +1,9 @@
 sudo: false
 language: node_js
 node_js:
+  - "0.12" # Ensure that we don't accidently slip in ES6 features
+  - "0.10" # Ensure that we work on older environments
+  - "0.8"  # like, really old
   - "6"
   - "8"
   - "9"

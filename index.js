@@ -798,23 +798,24 @@ Assume.add('generator', function generators(msg) {
  * @api public
  */
 Assume.add('rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync', function rejects(msg) {
-  const expectation = format('Thenable did @ end in a rejected state');
-  const value = typeof this.value == 'function' ? this.value() : this.value;
+  var expectation = format('Thenable did @ end in a rejected state');
+  var value = typeof this.value == 'function' ? this.value() : this.value;
+  var self = this;
 
-  const test = (success, resolveValue, resolve, reject) => {
+  function test(success, resolveValue, resolve, reject) {
     try {
-      this.test(success, msg, expectation);
+      self.test(success, msg, expectation);
       resolve(resolveValue);
     } catch (ex) {
       reject(ex);
     }
-  };
+  }
 
   return {
     then: function then(resolve, reject) {
-      value.then(s => {
+      value.then(function (s) {
         test(false, s, resolve, reject);
-      }, r => {
+      }, function (r) {
         test(true, r, resolve, reject);
       });
     }
@@ -828,25 +829,25 @@ Assume.add('rejected, rejects, throwAsync, throwsAsync, failAsync, failsAsync', 
  * @api public
  */
 Assume.add('resolveSync, resolvesSync, resolvedSync, completeSync, completesSync, completedSync', function completedSync(msg) {
-  const expectation = format('Thenable did @ complete synchronously');
-  const value = typeof this.value == 'function' ? this.value() : this.value;
-  const test = this.test.bind(this);
+  var expectation = format('Thenable did @ complete synchronously');
+  var value = typeof this.value == 'function' ? this.value() : this.value;
+  var self = this;
 
   return {
     then: function then(resolve, reject) {
-      let completed = false;
-      let resolveValue;
+      var completed = false;
+      var resolveValue;
 
-      value.then(s => {
+      value.then(function (s) {
         resolveValue = s;
         completed = true;
-      }, r => {
+      }, function (r) {
         resolveValue = r;
         completed = true;
       });
 
       try {
-        test(completed, msg, expectation);
+        self.test(completed, msg, expectation);
         resolve(resolveValue);
       } catch (ex) {
         reject(ex);
