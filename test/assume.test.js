@@ -50,6 +50,10 @@ describe('Assume', function assertions() {
     }
   });
 
+  it('aliases chain properly', function() {
+    assume(1).is.to.be.been.is.was.and.has.have.had.with.that.at.of.same.does.did.itself.which.equals(1);
+  });
+
   describe('#csliceStacklone', function () {
     it('increases slice for each clone', function () {
       var a = assume('x')

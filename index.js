@@ -157,7 +157,7 @@ function Assume(value, flags) {
 
   this.value = value;
 
-  Assume.assign(this)('to, be, been, is, and, has, have, with, that, at, of, same, does, itself, which');
+  Assume.assign(this)('to, be, been, is, was, and, has, have, had, with, that, at, of, same, does, did, itself, which');
   Assume.alias(value, this);
 }
 

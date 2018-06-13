@@ -115,14 +115,18 @@ of chains:
 - `be`
 - `been`
 - `is`
+- `was`
 - `and`
 - `has`
+- `have`
+- `had`
 - `with`
 - `that`
 - `at`
 - `of`
 - `some`
 - `does`
+- `did`
 - `itself`
 - `which`
 
