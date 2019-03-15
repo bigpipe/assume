@@ -3,6 +3,7 @@
   "version": "2.1.0",
   "description": "Expect-like assertions that works seamlessly in node and browsers",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --reporter spec --ui bdd ./test/*.test.js",
     "prepublishOnly": "mkdir -p dist && browserify index.js -o dist/assume.js --standalone assume",
@@ -40,7 +41,7 @@
   "devDependencies": {
     "browserify": "14.x.x",
     "istanbul": "0.4.x",
-    "mocha": "3.x.x",
+    "mocha": "^6.0.2",
     "pre-commit": "1.x.x"
   },
   "dependencies": {
