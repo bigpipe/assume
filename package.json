@@ -41,7 +41,7 @@
   "devDependencies": {
     "browserify": "14.x.x",
     "istanbul": "0.4.x",
-    "mocha": "^6.0.2",
+    "mocha": "3.x.x",
     "pre-commit": "1.x.x"
   },
   "dependencies": {
