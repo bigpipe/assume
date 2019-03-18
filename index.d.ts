@@ -18,27 +18,23 @@ declare namespace Assume {
   export const config: Assume.Config;
   export const supports: Assume.Supports;
 
-  export const hope: Assume.Assumption;
-  export const expect: Assume.Assumption;
-  export const assume: Assume.Assumption;
-  export const sincerely: Assume.Assumption;
-
   export interface ErrCallback {
     (err?: Error | string): void
   }
 
   export function plan(numAssertionsPlanned: number, next?: Assume.ErrCallback): Assume.ErrCallback;
 
-  export function wait(callbackCallCount: number, numAssertionsPlanned?: number, onFinished: Assume.ErrCallback): Assume.ErrCallback;
+  export function wait(callbackCallCount: number, numAssertionsPlanned: number, onFinished: Assume.ErrCallback): Assume.ErrCallback;
+  export function wait(callbackCallCount: number, onFinished: Assume.ErrCallback): Assume.ErrCallback;
 
-  export function use(plugin: function): void;
+  export function use(plugin: Function): void;
 
-  export function test(passed: boolean, msg: string, expectation: function, slicesOfStack?: number): Assume.Assumption;
+  export function test(passed: boolean, msg: string, expectation: Function, slicesOfStack?: number): Assume.Assumption;
 
-  export function add(methods: string | string[], func: function): void;
+  export function add(methods: string | string[], func: Function): void;
 
   export interface AssignFunction {
-    (methods: string | string[], func: function)
+    (methods: string | string[], func: Function)
   }
 
   export function assign(assignTo: object): Assume.AssignFunction;
@@ -53,6 +49,19 @@ declare namespace Assume {
   export interface Supports {
     readonly generators: boolean,
     readonly native: boolean
+  }
+
+  export const hope: Assume.HopeAssumption;
+  export const expect: Assume.HopeAssumption;
+  export const assume: Assume.HopeAssumption;
+  export const sincerely: Assume.HopeAssumption;
+
+  export interface HopeAssumption {
+    readonly hope: Assume.HopeAssumption,
+    readonly expect: Assume.HopeAssumption,
+    readonly assume: Assume.HopeAssumption,
+    readonly sincerely: Assume.HopeAssumption,
+    that(value: any, flags?: Assume.Flags): Assume.Assumption,
   }
 
   export interface Assumption {
@@ -83,18 +92,16 @@ declare namespace Assume {
     readonly strict: Assume.Assumption,
     readonly strictly: Assume.Assumption,
 
-    that(value: any, flags?: Assume.Flags): Assume.Assumption,
-
     a(type: string, msg?: string): void,
     an(type: string, msg?: string): void,
     
     eitherOfType(types: string[], msg?: string): void,
     oneOfType(types: string[], msg?: string): void,
     
-    instanceOf(type: function, msg?: string): void,
-    instanceof(type: function, msg?: string): void,
-    inherits(type: function, msg?: string): void,
-    inherit(type: function, msg?: string): void,
+    instanceOf(type: Function, msg?: string): void,
+    instanceof(type: Function, msg?: string): void,
+    inherits(type: Function, msg?: string): void,
+    inherit(type: Function, msg?: string): void,
 
     include(value: any, msg?: string): void,
     includes(value: any, msg?: string): void,
@@ -143,13 +150,13 @@ declare namespace Assume {
     within(lowerBound: number, upperBound: number, msg?: string): void,
     between(lowerBound: number, upperBound: number, msg?: string): void,
 
-    hasOwn(key: string, value?: string, msg?: string): void,
-    own(key: string, value?: string, msg?: string): void,
-    ownProperty(key: string, value?: string, msg?: string): void,
-    haveOwnProperty(key: string, value?: string, msg?: string): void,
-    property(key: string, value?: string, msg?: string): void,
-    owns(key: string, value?: string, msg?: string): void,
-    hasown(key: string, value?: string, msg?: string): void,
+    hasOwn(key: string, value?: any, msg?: string): void,
+    own(key: string, value?: any, msg?: string): void,
+    ownProperty(key: string, value?: any, msg?: string): void,
+    haveOwnProperty(key: string, value?: any, msg?: string): void,
+    property(key: string, value?: any, msg?: string): void,
+    owns(key: string, value?: any, msg?: string): void,
+    hasown(key: string, value?: any, msg?: string): void,
 
     match(regExp: RegExp | string, msg?: string): void,
     matches(regExp: RegExp | string, msg?: string): void,
@@ -165,10 +172,10 @@ declare namespace Assume {
 
     either(values: any[], msg?: string): void,
 
-    throw(err: RegExp | string | function, msg?: string): void,
-    throws(err: RegExp | string | function, msg?: string): void,
-    fail(err: RegExp | string | function, msg?: string): void,
-    fails(err: RegExp | string | function, msg?: string): void,
+    throw(err?: RegExp | string | Function, msg?: string): void,
+    throws(err?: RegExp | string | Function, msg?: string): void,
+    fail(err?: RegExp | string | Function, msg?: string): void,
+    fails(err?: RegExp | string | Function, msg?: string): void,
 
     finite(msg?: string): void,
     isFinite(msg?: string): void,
