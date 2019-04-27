@@ -115,6 +115,7 @@ declare namespace Assume {
 
     falsely(msg?: string): void,
     falsey(msg?: string): void,
+    falsy(msg?: string): void,
 
     true(msg?: string): void,
 
