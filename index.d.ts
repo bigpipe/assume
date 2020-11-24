@@ -9,41 +9,60 @@ declare function Assume(value: any, flags?: Assume.Flags): Assume.Assumption;
 
 declare namespace Assume {
   export interface Flags {
-
-    stacktrace: boolean,
-    diff: boolean,
-    sliceStack: boolean
+    stacktrace?: boolean,
+    diff?: boolean,
+    sliceStack?: number,
+    slice?: number
   }
 
-  export const config: Assume.Config;
-  export const supports: Assume.Supports;
+  export const config: Config;
+  export const supports: Supports;
+  export const flags: Flags;
 
   export interface ErrCallback {
     (err?: Error | string): void
   }
 
-  export function plan(numAssertionsPlanned: number, next?: Assume.ErrCallback): Assume.ErrCallback;
+  interface AssumeInstance<T = any> extends Flags {
+    value: T,
+    test: TestFunction
+  }
 
-  export function wait(callbackCallCount: number, numAssertionsPlanned: number, onFinished: Assume.ErrCallback): Assume.ErrCallback;
-  export function wait(callbackCallCount: number, onFinished: Assume.ErrCallback): Assume.ErrCallback;
+  export interface AddonAssumption<T> {
+    (this: AssumeInstance<T>, ...args: any): Assumption;
+  }
+
+  export interface Expectation {
+    (expectation: string): string
+  }
+
+  interface TestFunction {
+    (passed: boolean, msg: string, expectation: Expectation | string, slicesOfStack?: number): Assumption
+  }
+
+  export function plan(numAssertionsPlanned: number, next?: ErrCallback): ErrCallback;
+
+  export function wait(callbackCallCount: number, numAssertionsPlanned: number, onFinished: ErrCallback): ErrCallback;
+  export function wait(callbackCallCount: number, onFinished: ErrCallback): ErrCallback;
 
   export function use(plugin: Function): void;
 
-  export function test(passed: boolean, msg: string, expectation: Function, slicesOfStack?: number): Assume.Assumption;
+  export const test: TestFunction
 
-  export function add(methods: string | string[], func: Function): void;
+  export function add<T>(methods: string | string[], func: AddonAssumption<T>): void;
 
   export interface AssignFunction {
     (methods: string | string[], func: Function)
   }
 
-  export function assign(assignTo: object): Assume.AssignFunction;
+  export function assign(assignTo: object): AssignFunction;
 
-  export function clone(value: any): Assume.Assumption;
+  export function clone(value: any): Assumption;
 
   export interface Config {
     includeStack: boolean,
-    showDiff: boolean
+    showDiff: boolean,
+    sliceStack: number
   }
 
   export interface Supports {
@@ -51,46 +70,46 @@ declare namespace Assume {
     readonly native: boolean
   }
 
-  export const hope: Assume.HopeAssumption;
-  export const expect: Assume.HopeAssumption;
-  export const assume: Assume.HopeAssumption;
-  export const sincerely: Assume.HopeAssumption;
+  export const hope: HopeAssumption;
+  export const expect: HopeAssumption;
+  export const assume: HopeAssumption;
+  export const sincerely: HopeAssumption;
 
   export interface HopeAssumption {
-    readonly hope: Assume.HopeAssumption,
-    readonly expect: Assume.HopeAssumption,
-    readonly assume: Assume.HopeAssumption,
-    readonly sincerely: Assume.HopeAssumption,
-    that(value: any, flags?: Assume.Flags): Assume.Assumption,
+    readonly hope: HopeAssumption,
+    readonly expect: HopeAssumption,
+    readonly assume: HopeAssumption,
+    readonly sincerely: HopeAssumption,
+    that(value: any, flags?: Flags): Assumption,
   }
 
   export interface Assumption {
-    readonly to: Assume.Assumption,
-    readonly be: Assume.Assumption,
-    readonly been: Assume.Assumption,
-    readonly is: Assume.Assumption,
-    readonly was: Assume.Assumption,
-    readonly and: Assume.Assumption,
-    readonly has: Assume.Assumption,
-    readonly have: Assume.Assumption,
-    readonly had: Assume.Assumption,
-    readonly with: Assume.Assumption,
-    readonly that: Assume.Assumption,
-    readonly at: Assume.Assumption,
-    readonly of: Assume.Assumption,
-    readonly same: Assume.Assumption,
-    readonly does: Assume.Assumption,
-    readonly did: Assume.Assumption,
-    readonly itself: Assume.Assumption,
-    readonly which: Assume.Assumption,
+    readonly to: Assumption,
+    readonly be: Assumption,
+    readonly been: Assumption,
+    readonly is: Assumption,
+    readonly was: Assumption,
+    readonly and: Assumption,
+    readonly has: Assumption,
+    readonly have: Assumption,
+    readonly had: Assumption,
+    readonly with: Assumption,
+    readonly that: Assumption,
+    readonly at: Assumption,
+    readonly of: Assumption,
+    readonly same: Assumption,
+    readonly does: Assumption,
+    readonly did: Assumption,
+    readonly itself: Assumption,
+    readonly which: Assumption,
 
-    readonly not: Assume.Assumption,
-    readonly doesnt: Assume.Assumption,
-    readonly dont: Assume.Assumption,
-    readonly deep: Assume.Assumption,
-    readonly deeply: Assume.Assumption,
-    readonly strict: Assume.Assumption,
-    readonly strictly: Assume.Assumption,
+    readonly not: Assumption,
+    readonly doesnt: Assumption,
+    readonly dont: Assumption,
+    readonly deep: Assumption,
+    readonly deeply: Assumption,
+    readonly strict: Assumption,
+    readonly strictly: Assumption,
 
     a(type: string, msg?: string): void,
     an(type: string, msg?: string): void,
